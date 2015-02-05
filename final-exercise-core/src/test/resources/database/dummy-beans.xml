@@ -7,9 +7,57 @@
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+        
+    <bean id="p1" class="ch.elca.training.dom.Project">
+    	<property name="number" value="1" />
+    	<property name="name" value="Project 1" />
+    	<property name="customer" value="Customer 1" />
+    	<property name="status" value="TOV" />
+    	<property name="startDate" value="01/01/2015" />
+    	<property name="endDate"><null /></property>
+    </bean>
+    <bean id="p2" class="ch.elca.training.dom.Project">
+    	<property name="number" value="2" />
+    	<property name="name" value="Project 2" />
+    	<property name="customer" value="Customer 2" />
+    	<property name="status" value="FIN" />
+    	<property name="startDate" value="01/01/2010" />
+    	<property name="endDate" value="09/09/2010" />
+    </bean>
+    <bean id="p3" class="ch.elca.training.dom.Project">
+    	<property name="number" value="3" />
+    	<property name="name" value="Project 3" />
+    	<property name="customer" value="Customer 3" />
+    	<property name="status" value="VAL" />
+    	<property name="startDate" value="01/01/2014" />
+    	<property name="endDate"><null /></property>
+    </bean>
 
 	<util:list id="dummyProjects" list-class="java.util.ArrayList"
 		value-type="ch.elca.training.dom.Project">
+		<ref bean="p1" />
+		<ref bean="p2" />
+		<ref bean="p3" />
 	</util:list>
 
+	<!-- For Dates -->
+	<bean id="dateEditor"
+		class="org.springframework.beans.propertyeditors.CustomDateEditor">
+		<constructor-arg>
+			<bean class="java.text.SimpleDateFormat">
+				<constructor-arg value="dd/MM/yyyy" />
+			</bean>
+		</constructor-arg>
+		<constructor-arg value="true" />
+	</bean>
+
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="customEditors">
+			<map>
+				<entry key="java.util.Date">
+					<ref local="dateEditor" />
+				</entry>
+			</map>
+		</property>
+	</bean>
 </beans>

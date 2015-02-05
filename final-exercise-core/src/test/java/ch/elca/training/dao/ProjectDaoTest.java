@@ -1,21 +1,21 @@
 package ch.elca.training.dao;
 
+import java.util.List;
+
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import ch.elca.training.dom.Project;
 
 /**
  * Test {@link ProjectDao}
  * 
  * @author DTR
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:database/dummy-beans.xml"})
-public class ProjectDaoTest {
+
+public class ProjectDaoTest extends DaoTestBase {
 	
 	@Test
-	public void afterInsertShouldReturnSameProject() {
-		
+	public void shouldQueryTheSameAsDummyObjects() throws Exception {
+		List<Project> projects = projectDao.getAll();
 	}
 }

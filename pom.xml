@@ -60,6 +60,11 @@
 
 		<!-- HIBERNATE -->
 		<dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.21</version>
+        </dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
@@ -143,6 +148,13 @@
 	</dependencies>
 
 	<build>
+		<extensions>
+            <extension>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>5.1.21</version>
+            </extension>
+        </extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
