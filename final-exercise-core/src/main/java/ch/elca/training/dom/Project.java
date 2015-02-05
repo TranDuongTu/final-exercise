@@ -11,7 +11,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * Project domain object.
+ * Project persistence object.
  * 
  * @author DTR
  */
@@ -24,6 +24,7 @@ public class Project extends BaseDom {
 	/**
 	 * Project Number.
 	 */
+	public static final String PROPERTY_NUMBER = "number";
 	public static final String COLUMN_NUMBER = "pro_number";
 	
 	@Column(name = COLUMN_NUMBER, nullable = false, unique = true)
@@ -32,6 +33,7 @@ public class Project extends BaseDom {
 	/**
 	 * Project Name.
 	 */
+	public static final String PROPERTY_NAME = "name";
 	public static final String COLUMN_NAME = "pro_name";
 	private static final int CONSTRAINT_NAME_LENGTH = 100;
 	
@@ -41,6 +43,7 @@ public class Project extends BaseDom {
 	/**
 	 * Project Customer.
 	 */
+	public static final String PROPERTY_CUSTOMER = "customer";
 	public static final String COLUMN_CUSTOMER = "pro_customer";
 	private static final int CONSTRAINT_CUSTOMER_LENGTH = 500;
 	
@@ -50,6 +53,7 @@ public class Project extends BaseDom {
 	/**
 	 * Project status.
 	 */
+	public static final String PROPERTY_STATUS = "status";
 	public static final String COLUMN_STATUS = "pro_status";
 	private static final int CONSTRAINT_STATUS_LENGTH = 3;
 	

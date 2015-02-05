@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 /**
- * Based class for domain objects.
+ * Based class for all persistence objects.
  * 
  * @author DTR
  */
