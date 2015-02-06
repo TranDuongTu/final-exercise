@@ -22,7 +22,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import ch.elca.training.constants.UrlConstants;
@@ -30,26 +29,23 @@ import ch.elca.training.services.ProjectService;
 
 @Controller
 @RequestMapping(UrlConstants.SEARCH_PROJECTS_URL)
-@SessionAttributes(value = {UrlConstants.SESSION_QUERY})
 public class SearchProjectsController {
-    
-    @Autowired
-    private ProjectService projectService;
 
-    @RequestMapping(method = RequestMethod.GET)
-    protected String showForm(Model model) {
-    	if (!model.containsAttribute(UrlConstants.COMMAND_OBJECT_QUERY)) {
-    	}
-    	
-        return UrlConstants.SEARCH_VIEW;
-    }
+	@Autowired
+	private ProjectService projectService;
 
-    @RequestMapping(method = RequestMethod.POST)
-    protected String onSubmit(
-    		BindingResult queryBindingResult, 
-    		final RedirectAttributes flashAttributes,
-    		Model model) {
+	@RequestMapping(method = RequestMethod.GET)
+	protected String showForm(Model model) {
+		if (!model.containsAttribute(UrlConstants.COMMAND_OBJECT_QUERY)) {
+		}
 
-        return UrlConstants.REDIRECT_PREFIX + UrlConstants.SEARCH_PROJECTS_URL;
-    }
+		return UrlConstants.SEARCH_VIEW;
+	}
+
+	@RequestMapping(method = RequestMethod.POST)
+	protected String onSubmit(BindingResult queryBindingResult,
+			final RedirectAttributes flashAttributes, Model model) {
+
+		return UrlConstants.REDIRECT_PREFIX + UrlConstants.SEARCH_PROJECTS_URL;
+	}
 }

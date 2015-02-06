@@ -24,7 +24,7 @@
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>
-				classpath*:webspringcontext/*context.xml
+				classpath*:webspringcontext/web-context.xml
 			</param-value>
 		</init-param>
 	</servlet>
@@ -58,10 +58,10 @@
 	<!-- Handle error page -->
 	<error-page>
 		<error-code>404</error-code>
-		<location>/WEB-INF/jsp/errors//404.jsp</location>
+		<location>/WEB-INF/views/errors//404.jsp</location>
 	</error-page>
 	<error-page>
 		<error-code>500</error-code>
-		<location>/WEB-INF/jsp/errors/500.jsp</location>
+		<location>/WEB-INF/views/errors/500.jsp</location>
 	</error-page>
 </web-app>
