@@ -38,4 +38,13 @@ public class ProjectSearchCriteria {
 	public void setProjectStatus(Status projectStatus) {
 		this.projectStatus = projectStatus;
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return String.format("{name: %s, number: %s, status: %s, customer: %s}",
+				projectName, projectNumber, projectStatus, customer);
+	}
 }

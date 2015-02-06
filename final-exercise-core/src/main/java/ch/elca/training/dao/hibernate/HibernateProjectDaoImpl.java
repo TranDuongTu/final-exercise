@@ -141,7 +141,7 @@ public class HibernateProjectDaoImpl
 			return result;
 		} catch (Exception e) {
 			throw new DaoOperationException(String.format(
-					"Cannot find Project by status because: %s", e.getMessage()));
+					"Cannot find Project by patterns because: %s", e.getMessage()));
 		}
 	}
 	
@@ -170,6 +170,10 @@ public class HibernateProjectDaoImpl
 	}
 	
 	private Criterion criterionStatusMatch(Status status) {
-		return Restrictions.eq(Project.PROPERTY_STATUS, status);
+		if (status != null) {
+			return Restrictions.eq(Project.PROPERTY_STATUS, status);
+		} else {
+			return Restrictions.sqlRestriction("(0 = 0)");
+		}
 	}
 }

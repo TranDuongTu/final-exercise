@@ -37,9 +37,5 @@
 
 		<!-- Add more packages if necessary -->
 		<property name="packagesToScan" value="ch.elca.training.dom" />
-		<property name="entityInterceptor" ref="emptyInterceptor" />
 	</bean>
-
-	<bean id="emptyInterceptor" class="org.hibernate.EmptyInterceptor" />
-
 </beans>
