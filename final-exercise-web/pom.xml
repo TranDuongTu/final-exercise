@@ -9,7 +9,9 @@
 	</parent>
 
 	<artifactId>final-exercise-web</artifactId>
+	<packaging>war</packaging>
 	<name>Final Exercise Web</name>
+	<url>http://maven.apache.org</url>
 
 	<dependencies>
 		<dependency>
