@@ -1,0 +1,26 @@
+.project-header {
+  background-color: #CA3928;
+  padding: 10px 10px 10px 10px;
+}
+
+.project-header-action {
+	float: right;
+	font-family: serif;
+	font-style: oblique;
+	font-weight: bold;
+	text-decoration: underline;
+	margin: 0 10px 0 10px;
+}
+
+.project-header-action a {
+	color: white;
+}
+
+.project-header-name {
+	color: white;
+	font-weight: bold;
+	font-family: serif;
+	font-style: oblique;
+	font-size: 20px;
+	margin-left: 90px;
+}

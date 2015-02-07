@@ -29,7 +29,7 @@ public interface UrlConstants {
     public static final String EDIT_VIEW = "edit";
     public static final String ERROR_VIEW = "error";
     
-    public static final String COMMAND_OBJECT_QUERY = "query";
+    public static final String COMMAND_OBJECT_QUERY = "projectSearchCriteria";
     public static final String COMMAND_OBJECT_PROJECT = "project";
     
     public static final String SESSION_QUERY = "query";

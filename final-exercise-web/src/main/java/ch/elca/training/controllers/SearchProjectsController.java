@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import ch.elca.training.constants.UrlConstants;
+import ch.elca.training.dom.Status;
 import ch.elca.training.services.ProjectService;
+import ch.elca.training.services.searching.ProjectSearchCriteria;
 
 @Controller
 @RequestMapping(UrlConstants.SEARCH_PROJECTS_URL)
@@ -37,6 +39,12 @@ public class SearchProjectsController {
 	@RequestMapping(method = RequestMethod.GET)
 	protected String showForm(Model model) {
 		if (!model.containsAttribute(UrlConstants.COMMAND_OBJECT_QUERY)) {
+			ProjectSearchCriteria criteria = new ProjectSearchCriteria();
+			criteria.setCustomer("");
+			criteria.setProjectName("");
+			criteria.setProjectNumber(0);
+			criteria.setProjectStatus(Status.FIN);
+			model.addAttribute(UrlConstants.COMMAND_OBJECT_QUERY, criteria);
 		}
 
 		return UrlConstants.SEARCH_VIEW;

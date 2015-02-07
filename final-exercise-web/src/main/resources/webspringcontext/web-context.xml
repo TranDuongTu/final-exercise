@@ -14,6 +14,7 @@
 
 	<context:annotation-config />
 	<context:component-scan base-package="ch.elca.training" />
+	<mvc:resources mapping="/resources/**" location="/resources/" />
 	<mvc:annotation-driven />
 
 	<!-- ================================================================ -->
