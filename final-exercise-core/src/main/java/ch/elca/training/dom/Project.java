@@ -28,7 +28,7 @@ public class Project extends BaseDom {
 	public static final String COLUMN_NUMBER = "pro_number";
 	
 	@Column(name = COLUMN_NUMBER, nullable = false, unique = true)
-	private int number;
+	private Integer number;
 	
 	/**
 	 * Project Name.
@@ -64,6 +64,7 @@ public class Project extends BaseDom {
 	/**
 	 * Start date.
 	 */
+	public static final String PROPERTY_START_DATE = "startDate";
 	public static final String COLUMN_START_DATE = "pro_start_date";
 	
 	@Temporal(value = TemporalType.DATE)
@@ -73,6 +74,7 @@ public class Project extends BaseDom {
 	/**
 	 * End date.
 	 */
+	public static final String PROPERTY_END_DATE = "endDate";
 	public static final String COLUMN_END_DATE = "pro_end_date";
 	
 	@Temporal(value = TemporalType.DATE)
@@ -83,11 +85,11 @@ public class Project extends BaseDom {
 	// GETTERs AND SETTERs
 	// ==================================================================================
 	
-	public int getNumber() {
+	public Integer getNumber() {
 		return number;
 	}
 
-	public void setNumber(int number) {
+	public void setNumber(Integer number) {
 		this.number = number;
 	}
 

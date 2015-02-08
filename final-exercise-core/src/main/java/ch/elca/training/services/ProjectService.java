@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.elca.training.dom.Project;
 import ch.elca.training.services.exceptions.ServiceInvalidInputException;
 import ch.elca.training.services.exceptions.ServiceOperationException;
-import ch.elca.training.services.searching.ProjectSearchCriteria;
+import ch.elca.training.services.searching.ProjectQuery;
 
 /**
  * Services for working with {@link Project}s.
@@ -22,7 +22,7 @@ public interface ProjectService {
 	/**
 	 * Search projects based on given criteria.
 	 */
-	List<Project> searchProject(ProjectSearchCriteria criteria) 
+	List<Project> searchProject(ProjectQuery criteria) 
 			throws ServiceInvalidInputException, ServiceOperationException;
 	
 	/**

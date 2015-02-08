@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -20,7 +19,6 @@ import ch.elca.training.dom.Project;
 @ContextConfiguration(locations = {
 		"classpath*:database/dummy-beans-test.xml",
 		"classpath*:springcontext/*test.xml"})
-@Ignore
 public class ProjectDaoTest extends DaoTestBase {
 	
 	private static final Comparator<Project> PROJECT_COMPARATOR = 

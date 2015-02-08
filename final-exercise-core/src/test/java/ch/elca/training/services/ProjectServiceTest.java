@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ch.elca.training.dom.Project;
 import ch.elca.training.dom.Status;
-import ch.elca.training.services.searching.ProjectSearchCriteria;
+import ch.elca.training.services.searching.ProjectQuery;
 
 /**
  * Test ProjectService.
@@ -49,7 +49,7 @@ public class ProjectServiceTest {
 	public void shouldReturnExactProjectWithNumber() throws Exception {
 		Project experimentedProject = dummyProjects.get(0);
 		
-		ProjectSearchCriteria criteria = createCriteria(
+		ProjectQuery criteria = createCriteria(
 				"", experimentedProject.getNumber(), "", null);
 		
 		List<Project> result = projectService.searchProject(criteria);
@@ -80,9 +80,9 @@ public class ProjectServiceTest {
 	// PRIVATE HELPERs
 	// ==================================================================================
 	
-	private ProjectSearchCriteria createCriteria(
+	private ProjectQuery createCriteria(
 			String name, int number, String customer, Status status) {
-		ProjectSearchCriteria result = new ProjectSearchCriteria();
+		ProjectQuery result = new ProjectQuery();
 		result.setProjectName(name);
 		result.setCustomer(customer);
 		result.setProjectNumber(number);

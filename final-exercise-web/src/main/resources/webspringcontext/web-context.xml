@@ -13,7 +13,8 @@
                         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
 	<context:annotation-config />
-	<context:component-scan base-package="ch.elca.training" />
+	<context:component-scan base-package="ch.elca.training.controllers" />
+	
 	<mvc:resources mapping="/resources/**" location="/resources/" />
 	<mvc:annotation-driven />
 

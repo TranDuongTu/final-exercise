@@ -8,6 +8,6 @@
                         http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<context:property-placeholder location="classpath*:database/database.properties" />
-	<context:component-scan base-package="ch.elca.training" />
+	<context:component-scan base-package="ch.elca.training.services, ch.elca.training.dao, ch.elca.training.validators" />
 	<context:annotation-config />
 </beans>

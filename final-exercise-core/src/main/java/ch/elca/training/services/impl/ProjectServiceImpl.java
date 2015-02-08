@@ -12,7 +12,7 @@ import ch.elca.training.dom.Project;
 import ch.elca.training.services.ProjectService;
 import ch.elca.training.services.exceptions.ServiceInvalidInputException;
 import ch.elca.training.services.exceptions.ServiceOperationException;
-import ch.elca.training.services.searching.ProjectSearchCriteria;
+import ch.elca.training.services.searching.ProjectQuery;
 
 /**
  * Implementation for {@link ProjectService}
@@ -28,7 +28,7 @@ public class ProjectServiceImpl implements ProjectService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Project> searchProject(ProjectSearchCriteria criteria) 
+	public List<Project> searchProject(ProjectQuery criteria) 
 			throws ServiceInvalidInputException, ServiceOperationException {
 		
 		validateSearchCriteria(criteria);
@@ -83,7 +83,7 @@ public class ProjectServiceImpl implements ProjectService {
 	// PRIVATE HELPERs
 	// ==================================================================================
 	
-	private void validateSearchCriteria(ProjectSearchCriteria criteria) 
+	private void validateSearchCriteria(ProjectQuery criteria) 
 			throws ServiceInvalidInputException {
 		if (criteria.getProjectName() == null
 				|| criteria.getProjectNumber() < 0
