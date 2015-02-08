@@ -30,6 +30,7 @@ public class ProjectQueryValidator implements Validator {
 	}
 	
 	public void validate(Object object, Errors errors) {
+		
 		ProjectQuery queryToBeValidated = (ProjectQuery) object;
 		
 		validateNumber(queryToBeValidated, errors);
