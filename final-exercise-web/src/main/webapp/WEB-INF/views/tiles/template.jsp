@@ -11,6 +11,8 @@
 	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="resources/css/header.css">
 <link rel="stylesheet" type="text/css" href="resources/css/menu.css">
+<link rel="stylesheet" type="text/css" href="resources/css/search.css">
+<link rel="stylesheet" type="text/css" href="resources/css/edit.css">
 </head>
 
 <body>

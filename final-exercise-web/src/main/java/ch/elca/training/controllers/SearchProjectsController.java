@@ -21,6 +21,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -37,15 +39,22 @@ import ch.elca.training.constants.ModelKeys;
 import ch.elca.training.constants.Urls;
 import ch.elca.training.constants.ViewNames;
 import ch.elca.training.dom.Project;
+import ch.elca.training.dom.Status;
 import ch.elca.training.exceptions.BusinessOperationException;
+import ch.elca.training.propertyeditors.StatusEditor;
 import ch.elca.training.services.ProjectService;
 import ch.elca.training.services.exceptions.ServiceOperationException;
 import ch.elca.training.services.searching.ProjectQuery;
 import ch.elca.training.validators.ProjectQueryValidator;
 
+/**
+ * Handle requests for searching projects.
+ * 
+ * @author DTR
+ */
 @Controller
 @RequestMapping(Urls.SEARCH)
-@SessionAttributes(value = {ModelKeys.PROJECT_SEARCH_CRITERIA})
+@SessionAttributes(value = {ModelKeys.PROJECT_QUERY})
 public class SearchProjectsController {
 
 	@Autowired
@@ -54,16 +63,29 @@ public class SearchProjectsController {
 	@Autowired
 	private ProjectQueryValidator projectQueryValidator;
 	
-	@InitBinder
-	public void initBinder(WebDataBinder binder) {
+	/**
+	 * General {@link InitBinder} for {@link CustomEditor}.
+	 */
+	 @InitBinder
+	 public void generalBinding(WebDataBinder binder) {
+		 binder.registerCustomEditor(Status.class, new StatusEditor());
+	 }
+	
+	/**
+	 * {@link InitBinder} for {@link ProjectQuery}.
+	 */
+	@InitBinder(ModelKeys.PROJECT_QUERY)
+	public void projectQueryBinding(WebDataBinder binder) {
 		binder.setValidator(projectQueryValidator);
 	}
 	
 	/**
 	 * Handle all business level errors.
 	 */
+	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler({BusinessOperationException.class})
-	public String businessOperationsFailed() {
+	public String businessOperationsFailed(Model model, Exception e) {
+		model.addAttribute(ModelKeys.ERROR_MESSAGE, e.getMessage());
 		return ViewNames.ERROR;
 	}
 
@@ -71,11 +93,11 @@ public class SearchProjectsController {
 	 * GET request for showing search form.
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	protected String showForm(Model model) {
+	protected String showSearchForm(Model model) {
 		
 		/* Adding default search */
-		if (!model.containsAttribute(ModelKeys.PROJECT_SEARCH_CRITERIA)) {
-			model.addAttribute(ModelKeys.PROJECT_SEARCH_CRITERIA, ProjectQuery.defaultCriteria());
+		if (!model.containsAttribute(ModelKeys.PROJECT_QUERY)) {
+			model.addAttribute(ModelKeys.PROJECT_QUERY, ProjectQuery.defaultCriteria());
 		}
 
 		return ViewNames.SEARCH;
@@ -86,8 +108,8 @@ public class SearchProjectsController {
 	 * Using POST-REDIRECT-GET pattern.
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-    protected String onSubmit(
-    		@ModelAttribute(ModelKeys.PROJECT_SEARCH_CRITERIA) @Valid ProjectQuery projectSearchCriteria, 
+    protected String submitSearch(
+    		@ModelAttribute(ModelKeys.PROJECT_QUERY) @Valid ProjectQuery projectSearchCriteria, 
     		BindingResult queryBindingResult, 
     		Model model,
     		RedirectAttributes flashAttributes) {
@@ -96,7 +118,7 @@ public class SearchProjectsController {
     	if (queryBindingResult.hasErrors()) {
     		return ViewNames.SEARCH;
     	}
-    	model.addAttribute(ModelKeys.PROJECT_SEARCH_CRITERIA, projectSearchCriteria);
+    	model.addAttribute(ModelKeys.PROJECT_QUERY, projectSearchCriteria);
     	
     	/* Actual querying projects */
     	List<Project> projects = null;

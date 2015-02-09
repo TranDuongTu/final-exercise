@@ -19,8 +19,7 @@ public class ProjectQuery {
 			instance = new ProjectQuery();
 			instance.setCustomer("");
 			instance.setProjectName("");
-			instance.setProjectNumber(0);
-			instance.setProjectStatus(Status.VAL);
+			instance.setProjectStatus(null);
 		}
 		
 		return instance;

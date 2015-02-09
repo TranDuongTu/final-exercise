@@ -16,13 +16,12 @@ import ch.elca.training.services.searching.ProjectQuery;
 public class ProjectQueryValidator implements Validator {
 	
 	public static enum ErrorCode {
-		NumberNull,
-		NumberNegative,
-		NameNull,
-		NameLengthExceed,
-		CustomerNull,
-		CustomerLengthExceed,
-		NoCriteriaSet
+		QueryNumberNegative,
+		QueryNameNull,
+		QueryNameLengthExceed,
+		QueryCustomerNull,
+		QueryCustomerLengthExceed,
+		QueryNoCriteriaSet
 	}
 	
 	public boolean supports(Class<?> clazz) {
@@ -44,17 +43,11 @@ public class ProjectQueryValidator implements Validator {
 	 * Project number search validation
 	 */
 	private void validateNumber(ProjectQuery query, Errors errors) {
-		final String REASON_NULL = "Number must be not null";
 		final String REASON_NEGATIVE = "Number to query must be positive";
 		
-		if (query.getProjectNumber() == null) {
+		if (query.getProjectNumber() != null && query.getProjectNumber() < 1) {
 			errors.rejectValue(ProjectQuery.PROPERTY_NUMBER, 
-					ErrorCode.NumberNull.toString(), REASON_NULL);
-		}
-		
-		if (query.getProjectNumber() < 1) {
-			errors.rejectValue(ProjectQuery.PROPERTY_NUMBER, 
-					ErrorCode.NumberNegative.toString(), REASON_NEGATIVE);
+					ErrorCode.QueryNumberNegative.toString(), REASON_NEGATIVE);
 		}
 	}
 	
@@ -69,12 +62,12 @@ public class ProjectQueryValidator implements Validator {
 		
 		if (query.getProjectName() == null) {
 			errors.rejectValue(ProjectQuery.PROPERTY_NAME, 
-					ErrorCode.NameNull.toString(), REASON_NULL);
+					ErrorCode.QueryNameNull.toString(), REASON_NULL);
 		}
 		
 		if (query.getProjectName().length() > MAX_NAME_LENGTH) {
 			errors.rejectValue(ProjectQuery.PROPERTY_NAME, 
-					ErrorCode.NameLengthExceed.toString(), REASON_LENGTH_EXCEED);
+					ErrorCode.QueryNameLengthExceed.toString(), REASON_LENGTH_EXCEED);
 		}
 	}
 	
@@ -89,12 +82,12 @@ public class ProjectQueryValidator implements Validator {
 		
 		if (query.getCustomer() == null) {
 			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, 
-					ErrorCode.CustomerNull.toString(), REASON_NULL);
+					ErrorCode.QueryCustomerNull.toString(), REASON_NULL);
 		}
 		
 		if (query.getCustomer().length() > MAX_CUSTOMER_LENGTH) {
 			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, 
-					ErrorCode.CustomerLengthExceed.toString(), REASON_LENGTH_EXCEED);
+					ErrorCode.QueryCustomerLengthExceed.toString(), REASON_LENGTH_EXCEED);
 		}
 	}
 	
@@ -108,7 +101,7 @@ public class ProjectQueryValidator implements Validator {
 				!StringUtils.isNotBlank(query.getProjectName()) &&
 				query.getProjectStatus() == null &&
 				query.getProjectNumber() == null) {
-			errors.reject(ErrorCode.NoCriteriaSet.toString(), REASON);
+			errors.reject(ErrorCode.QueryNoCriteriaSet.toString(), REASON);
 		}
 	}
 }

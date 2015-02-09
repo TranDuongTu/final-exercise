@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.elca.training.dom.Project;
 import ch.elca.training.services.exceptions.ServiceInvalidInputException;
 import ch.elca.training.services.exceptions.ServiceOperationException;
+import ch.elca.training.services.exceptions.ServiceProjectNotExistsException;
 import ch.elca.training.services.searching.ProjectQuery;
 
 /**
@@ -18,6 +19,12 @@ import ch.elca.training.services.searching.ProjectQuery;
 public interface ProjectService {
 	
 	public static final String BEAN_NAME = "projectService";
+	
+	/**
+	 * Get {@link Project} by Number.
+	 */
+	Project getProjectByNumber(int number) 
+			throws ServiceProjectNotExistsException, ServiceOperationException;
 	
 	/**
 	 * Search projects based on given criteria.

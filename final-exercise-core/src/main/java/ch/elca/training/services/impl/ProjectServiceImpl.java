@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ch.elca.training.dao.ProjectDao;
+import ch.elca.training.dao.exceptions.DaoObjectNotFoundException;
 import ch.elca.training.dao.exceptions.DaoOperationException;
 import ch.elca.training.dom.Project;
 import ch.elca.training.services.ProjectService;
 import ch.elca.training.services.exceptions.ServiceInvalidInputException;
 import ch.elca.training.services.exceptions.ServiceOperationException;
+import ch.elca.training.services.exceptions.ServiceProjectNotExistsException;
 import ch.elca.training.services.searching.ProjectQuery;
 
 /**
@@ -28,13 +30,27 @@ public class ProjectServiceImpl implements ProjectService {
 	/**
 	 * {@inheritDoc}
 	 */
+	public Project getProjectByNumber(int number) 
+			throws ServiceProjectNotExistsException, ServiceOperationException {
+		try {
+			return projectDao.getProjectByNumber(number);
+		} catch (DaoObjectNotFoundException e) {
+			throw new ServiceProjectNotExistsException(e.getMessage());
+		} catch (DaoOperationException e) {
+			throw new ServiceOperationException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<Project> searchProject(ProjectQuery criteria) 
 			throws ServiceInvalidInputException, ServiceOperationException {
 		
 		validateSearchCriteria(criteria);
 		
 		try {
-			if (criteria.getProjectNumber() != 0) {
+			if (criteria.getProjectNumber() != null) {
 				Project onlyOneProject = projectDao.getProjectByNumber(criteria.getProjectNumber());
 				List<Project> result = new ArrayList<Project>();
 				result.add(onlyOneProject);
@@ -86,11 +102,12 @@ public class ProjectServiceImpl implements ProjectService {
 	private void validateSearchCriteria(ProjectQuery criteria) 
 			throws ServiceInvalidInputException {
 		if (criteria.getProjectName() == null
-				|| criteria.getProjectNumber() < 0
+				|| (criteria.getProjectNumber() != null && criteria.getProjectNumber() < 0)
 				|| criteria.getCustomer() == null
 				|| (criteria.getProjectName().isEmpty()
-						&& criteria.getProjectNumber() == 0
-						&& criteria.getCustomer().isEmpty())) {
+						&& criteria.getProjectNumber() == null
+						&& criteria.getCustomer().isEmpty()
+						&& criteria.getProjectStatus() == null)) {
 			throw new ServiceInvalidInputException(
 					"Invalid search criteria: %s" + criteria.toString());
 		}
