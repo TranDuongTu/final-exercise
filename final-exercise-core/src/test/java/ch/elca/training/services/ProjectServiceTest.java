@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ch.elca.training.dom.Project;
 import ch.elca.training.dom.Status;
 import ch.elca.training.services.searching.ProjectQuery;
+import ch.elca.training.utils.ProjectFactory;
 
 /**
  * Test ProjectService.
@@ -25,21 +26,23 @@ import ch.elca.training.services.searching.ProjectQuery;
 @ContextConfiguration(locations = {"classpath*:**/*test.xml"})
 public class ProjectServiceTest {
 	
+	public static final int NO_DUMMY_PROJECTS = 100;
+	
 	@Autowired
 	private ProjectService projectService;
 	
-	@Autowired
 	private List<Project> dummyProjects;
 	
 	@Before
-	public void initData() throws Exception {
+	public void initTestData() throws Exception {
+		dummyProjects = ProjectFactory.getRandomProjects(NO_DUMMY_PROJECTS);
 		for (Project project : dummyProjects) {
 			projectService.saveOrUpdateProject(project);
 		}
 	}
-	
+
 	@After
-	public void clearData() throws Exception {
+	public void clearTestData() throws Exception {
 		for (Project project : dummyProjects) {
 			projectService.deleteProject(project);
 		}
@@ -59,21 +62,18 @@ public class ProjectServiceTest {
 	
 	@Test
 	public void shouldInsertNewProject() throws Exception {
-		Project newProject = new Project();
-		newProject.setCustomer("ABC");
-		newProject.setEndDate(new Date());
-		newProject.setName("DEF");
-		newProject.setNumber(999);
-		newProject.setStartDate(new Date());
-		newProject.setStatus(Status.VAL);
+		long id = getUnDuplicateId();
+		Project testProject = ProjectFactory.createProject(
+				0, (int) id, "Project Test", "Test Customer", 
+				ProjectFactory.randomizeStatus(), new Date(), new Date());
 		
-		projectService.saveOrUpdateProject(newProject);
+		projectService.saveOrUpdateProject(testProject);
 		
 		List<Project> result = projectService.searchProject(
-				createCriteria("", newProject.getNumber(), "", null));
+				createCriteria("", testProject.getNumber(), "", null));
 		
 		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(newProject.getNumber(), result.get(0).getNumber());
+		Assert.assertEquals(testProject.getNumber(), result.get(0).getNumber());
 	}
 	
 	// ==================================================================================
@@ -88,5 +88,15 @@ public class ProjectServiceTest {
 		result.setProjectNumber(number);
 		result.setProjectStatus(status);
 		return result;
+	}
+	
+	protected long getUnDuplicateId() {
+		long max = Integer.MIN_VALUE;
+		for (Project project : dummyProjects) {
+			if (project.getId() > max) {
+				max = project.getId();
+			}
+		}
+		return max + 1;
 	}
 }

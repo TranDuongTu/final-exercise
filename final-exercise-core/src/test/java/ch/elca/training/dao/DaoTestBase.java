@@ -10,21 +10,27 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.elca.training.dom.Project;
+import ch.elca.training.utils.ProjectFactory;
 
+/**
+ * Base class prepares data for test methods.
+ * 
+ * @author DTR
+ */
 @TransactionConfiguration
 @Transactional
 public class DaoTestBase extends AbstractTransactionalJUnit4SpringContextTests {
 	
+	public static final int NO_DUMMY_PROJECTS = 100;
+	
 	@Autowired
 	protected ProjectDao projectDao;
 	
-	@Autowired
 	protected List<Project> dummyProjects;
 	
 	@Before
 	public void initTestData() throws Exception {
-		projectDao.deleteAll();
-		
+		dummyProjects = ProjectFactory.getRandomProjects(NO_DUMMY_PROJECTS);
 		for (Project project : dummyProjects) {
 			projectDao.saveOrUpdate(project);
 		}
@@ -33,5 +39,19 @@ public class DaoTestBase extends AbstractTransactionalJUnit4SpringContextTests {
 	@After
 	public void clearTestData() throws Exception {
 		projectDao.deleteAll();
+	}
+	
+	// ==================================================================================
+	// PRIVATE HELPERs
+	// ==================================================================================
+	
+	protected long getUnDuplicateId() {
+		long max = Integer.MIN_VALUE;
+		for (Project project : dummyProjects) {
+			if (project.getId() > max) {
+				max = project.getId();
+			}
+		}
+		return max + 1;
 	}
 }

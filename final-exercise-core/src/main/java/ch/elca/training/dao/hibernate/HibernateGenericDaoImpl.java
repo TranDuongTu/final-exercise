@@ -3,14 +3,12 @@ package ch.elca.training.dao.hibernate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ch.elca.training.dao.GenericDao;
-import ch.elca.training.dao.exceptions.DaoCannotCountException;
-import ch.elca.training.dao.exceptions.DaoCannotDeleteException;
-import ch.elca.training.dao.exceptions.DaoCannotSaveException;
 import ch.elca.training.dao.exceptions.DaoObjectNotFoundException;
 import ch.elca.training.dao.exceptions.DaoOperationException;
 import ch.elca.training.dom.BaseDom;
@@ -20,7 +18,12 @@ import ch.elca.training.dom.BaseDom;
  * 
  * @author DTR
  */
-public class HibernateGenericDaoImpl<T extends BaseDom> implements GenericDao<T> {
+public abstract class HibernateGenericDaoImpl<T extends BaseDom> implements GenericDao<T> {
+	
+	/**
+	 * LOGGER for DAO concrete implementations.
+	 */
+	protected Logger logger;
 	
 	/**
 	 * Type information needed to do generic query.
@@ -54,6 +57,7 @@ public class HibernateGenericDaoImpl<T extends BaseDom> implements GenericDao<T>
 	 */
 	public HibernateGenericDaoImpl(Class<T> type) {
 		this.type = type;
+		logger = Logger.getLogger(type.getName());
 	}
 
 	// ==================================================================================
@@ -63,15 +67,18 @@ public class HibernateGenericDaoImpl<T extends BaseDom> implements GenericDao<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public int count() throws DaoCannotCountException {
+	public int count() throws DaoOperationException {
 		try {
-			return ((Long) sessionFactory.getCurrentSession()
+			logger.debug("Start counting...");
+			int result = ((Long) sessionFactory.getCurrentSession()
 	                .createCriteria(type)
 	                .setProjection(Projections.rowCount())
 	                .uniqueResult()).intValue();
+			logger.debug("End counting with result: " + result);
+			return result;
 		} catch (Exception e) {
-			throw new DaoCannotCountException(
-					String.format("Cannot count because: %s", e.getMessage()));
+			logger.debug("Exception when counting: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
 		}
 	}
 	
@@ -81,16 +88,18 @@ public class HibernateGenericDaoImpl<T extends BaseDom> implements GenericDao<T>
 	@SuppressWarnings("unchecked")
 	public T get(long id) throws DaoObjectNotFoundException, DaoOperationException {
 		try {
+			logger.debug("Get object with id = " + id);
 			T result = (T) sessionFactory.getCurrentSession().get(type, id);
 			if (result != null) {
+				logger.debug("Return object: " + result);
 				return result;
 			}
-			throw new DaoObjectNotFoundException(
-					String.format("Cannot find object %s with id: %d", type.getName(), id));
+			
+			logger.debug("Null object returned with id: " + id);
+			throw new DaoObjectNotFoundException("ID = " + id);
 		} catch (Exception e) {
-			throw new DaoOperationException(
-					String.format("Cannot query object %s with id: %d because: %s", 
-							type.getName(), id, e.getMessage()));
+			logger.debug("Unexpected error occurred: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
 		}
 	}
 	
@@ -100,54 +109,63 @@ public class HibernateGenericDaoImpl<T extends BaseDom> implements GenericDao<T>
 	@SuppressWarnings("unchecked")
 	public List<T> getAll() throws DaoOperationException {
 		try {
+			logger.debug("Attempt to get all");
 			List<?> rawList = sessionFactory.getCurrentSession()
-	                .createCriteria(type)
-	                .list();
+	                .createCriteria(type).list();
+			
+			logger.debug("Query by criteria return " + rawList.size() + " objects");
 			List<T> result = new ArrayList<T>();
 			for (Object object : rawList) {
 				result.add((T) object);
 			}
 			return result;
 		} catch (Exception e) {
-			throw new DaoOperationException(
-					String.format("Cannot get all because: %s", e.getMessage()));
+			logger.debug("Unexpected error occurred: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
 		}
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
-	public void saveOrUpdate(T object) throws DaoCannotSaveException {
+	public void saveOrUpdate(T object) throws DaoOperationException {
 		try {
+			logger.debug("Try to save or update object: " + object.toString());
 			sessionFactory.getCurrentSession().saveOrUpdate(object);
+			logger.debug("Successfully save or update object. New ID = " + object.getId());
 		} catch (Exception e) {
-			throw new DaoCannotSaveException(String.format("Cannot save %s because: %s", 
-					type.getName(), e.getMessage()));
+			logger.debug("Error when saving or updating: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
 		}
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
-	public void delete(T object) throws DaoCannotDeleteException {
+	public void delete(T object) throws DaoOperationException {
 		try {
+			logger.debug("Attempt to delete object: " + object.toString());
 			sessionFactory.getCurrentSession().delete(object);
+			logger.debug("Successfully delete object " + object.toString());
 		} catch (Exception e) {
-			throw new DaoCannotDeleteException(String.format("Cannot delete %s because: %s", 
-					type.getName(), e.getMessage()));
+			logger.debug("Error when deleting: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
 		}
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
-	public void deleteAll() throws DaoCannotDeleteException {
+	public void deleteAll() throws DaoOperationException {
 		try {
-			sessionFactory.getCurrentSession().createQuery(
-					"DELETE FROM " + type.getName()).executeUpdate();
+			logger.debug("Attempt to delete All");
+			sessionFactory.getCurrentSession()
+				.createQuery("DELETE FROM " + type.getName())
+				.executeUpdate();
+			logger.debug("Delete All completed");
 		} catch (Exception e) {
-			throw new DaoCannotDeleteException(String.format("Cannot delete %s because: %s", 
-					type.getName(), e.getMessage()));
+			logger.debug("Error when deleting All: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
 		}
 	}
 }

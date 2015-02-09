@@ -32,21 +32,23 @@ public class HibernateProjectDaoImpl
 	 */
 	public Project getProjectByNumber(int number) 
 			throws DaoObjectNotFoundException, DaoOperationException {
-		
 		try {
+			logger.debug("Attempt to get Project with number: " + number);
 			Project result = (Project) getSessionFactory().getCurrentSession()
 					.createCriteria(getType()).add(criterionNumberMatch(number))
 					.uniqueResult();
 			
 			if (result == null) {
+				logger.debug("The return Project is null");
 				throw new DaoObjectNotFoundException(
-						String.format("No Project with number: %d", number));
+						String.format("No Project with number %d found", number));
 			}
 			
+			logger.debug("Retrieved Project: " + result.toString());
 			return result;
 		} catch (Exception e) {
-			throw new DaoOperationException(String.format(
-					"Cannot get Project by number because: %s", e.getMessage()));
+			logger.debug("Unexpected error occurred: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
 		}
 	}
 	
@@ -55,11 +57,12 @@ public class HibernateProjectDaoImpl
 	 */
 	public List<Project> findProjectsWithNamePattern(String name) 
 			throws DaoOperationException {
-		
 		try {
+			logger.debug("Attempt to find Project with name pattern: " + name);
 			List<?> rawList = getSessionFactory().getCurrentSession()
 					.createCriteria(getType()).add(criterionNameMatch(name))
 					.list();
+			logger.debug("Query return " + rawList.size() + " raw objects");
 			
 			List<Project> result = new ArrayList<Project>();
 			for (Object object : rawList) {
@@ -68,9 +71,8 @@ public class HibernateProjectDaoImpl
 			
 			return result;
 		} catch (Exception e) {
-			throw new DaoOperationException(String.format(
-					"Cannot find Project by name pattern because: %s", 
-					e.getMessage()));
+			logger.debug("Unexpected error: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
 		}
 	}
 	
@@ -79,11 +81,12 @@ public class HibernateProjectDaoImpl
 	 */
 	public List<Project> findProjectsWithCustomerPattern(String customer) 
 			throws DaoOperationException {
-		
 		try {
+			logger.debug("Attempt to find Project with customer pattern: " + customer);
 			List<?> rawList = getSessionFactory().getCurrentSession()
 					.createCriteria(getType())
 					.add(criterionCustomerMatch(customer)).list();
+			logger.debug("Criteria query return " + rawList.size() + " raw objects");
 			
 			List<Project> result = new ArrayList<Project>();
 			for (Object object : rawList) {
@@ -92,9 +95,8 @@ public class HibernateProjectDaoImpl
 			
 			return result;
 		} catch (Exception e) {
-			throw new DaoOperationException(String.format(
-					"Cannot find Project by customer pattern because: %s", 
-					e.getMessage()));
+			logger.debug("Unexpected error: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
 		}
 	}
 	
@@ -103,11 +105,12 @@ public class HibernateProjectDaoImpl
 	 */
 	public List<Project> findProjectsWithStatus(Status status) 
 			throws DaoOperationException {
-		
 		try {
+			logger.debug("Attempt to find Projects with Status: " + status);
 			List<?> rawList = getSessionFactory().getCurrentSession()
 					.createCriteria(getType()).add(criterionStatusMatch(status))
 					.list();
+			logger.debug("Criteria query return " + rawList.size() + " raw objects");
 			
 			List<Project> result = new ArrayList<Project>();
 			for (Object object : rawList) {
@@ -116,8 +119,8 @@ public class HibernateProjectDaoImpl
 			
 			return result;
 		} catch (Exception e) {
-			throw new DaoOperationException(String.format(
-					"Cannot find Project by status because: %s", e.getMessage()));
+			logger.debug("Unexpected error: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
 		}
 	}
 	
@@ -128,10 +131,13 @@ public class HibernateProjectDaoImpl
 			String name, String customer, Status status) throws DaoOperationException {
 		
 		try {
+			logger.debug(String.format("Attempt to find Projects with name pattern: %s;"
+					+ "customer pattern: %s; Status: %s", name, customer, status));
 			List<?> rawList = getSessionFactory().getCurrentSession()
 					.createCriteria(getType())
 					.add(criterionForMultiplePatternsMatching(name, customer, status))
 					.list();
+			logger.debug("Criteria query return " + rawList.size() + " raw objects");
 			
 			List<Project> result = new ArrayList<Project>();
 			for (Object object : rawList) {
@@ -140,8 +146,39 @@ public class HibernateProjectDaoImpl
 			
 			return result;
 		} catch (Exception e) {
-			throw new DaoOperationException(String.format(
-					"Cannot find Project by patterns because: %s", e.getMessage()));
+			logger.debug("Unexpected error: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public java.util.List<Project> findProjectsMatchPatterns(
+			String name, String customer, Status status, int start, int length) 
+					throws DaoOperationException {
+		
+		try {
+			logger.debug(String.format("Attempt to find Projects with name pattern: %s;"
+					+ "customer pattern: %s; Status: %s. Start at: %d, length: %d", 
+						name, customer, status, start, length));
+			List<?> rawList = getSessionFactory().getCurrentSession()
+					.createCriteria(getType())
+					.add(criterionForMultiplePatternsMatching(name, customer, status))
+					.setFirstResult(start)
+					.setMaxResults(length)
+					.list();
+			logger.debug("Criteria query return " + rawList.size() + " raw objects");
+			
+			List<Project> result = new ArrayList<Project>();
+			for (Object object : rawList) {
+				result.add((Project) object);
+			}
+			
+			return result;
+		} catch (Exception e) {
+			logger.debug("Unexpected error: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
 		}
 	}
 	
