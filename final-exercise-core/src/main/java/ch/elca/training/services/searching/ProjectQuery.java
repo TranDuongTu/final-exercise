@@ -20,7 +20,6 @@ public class ProjectQuery {
 			instance.setCustomer("");
 			instance.setProjectName("");
 			instance.setProjectStatus(null);
-			instance.setTotal(1);
 			instance.setMax(10);
 		}
 		

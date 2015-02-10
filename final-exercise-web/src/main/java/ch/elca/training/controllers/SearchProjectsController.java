@@ -122,8 +122,7 @@ public class SearchProjectsController {
 	    	}
 	    	
 	    	/* Actual querying projects */
-	    	logger.debug(String.format("Query Projects from %d, max %d", 
-	    			projectQuery.getStart(), projectQuery.getMax()));
+	    	logger.debug("Query Projects with: " + projectQuery);
 	    	List<Project> projects = projectService.searchProject(projectQuery, 
 	    			projectQuery.getStart(), projectQuery.getMax());
 	    	logger.debug("Totally retrieved projects: " + projects.size());

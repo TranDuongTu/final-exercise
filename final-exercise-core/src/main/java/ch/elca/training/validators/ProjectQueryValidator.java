@@ -95,8 +95,7 @@ public class ProjectQueryValidator implements Validator {
 	 * Paging indices.
 	 */
 	private void validatePagingIndices(ProjectQuery query, Errors errors) {
-		if (query.getStart() < 0 || query.getMax() <= 0
-				|| (query.getStart() >= query.getTotal())) {
+		if (query.getMax() <= 0) {
 			errors.reject(ErrorCode.QueryPagingIndicesInvalid.toString());
 		}
 	}
