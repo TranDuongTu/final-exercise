@@ -3,6 +3,7 @@ package ch.elca.training.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,16 +28,24 @@ public class ProjectServiceImpl implements ProjectService {
 	@Autowired
 	private ProjectDao projectDao;
 	
+	private Logger logger;
+	
+	public ProjectServiceImpl() {
+		logger = Logger.getLogger(getClass());
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
-	public Project getProjectByNumber(int number) 
-			throws ServiceProjectNotExistsException, ServiceOperationException {
+	public int countProjects() throws ServiceOperationException {
 		try {
-			return projectDao.getProjectByNumber(number);
-		} catch (DaoObjectNotFoundException e) {
-			throw new ServiceProjectNotExistsException(e.getMessage());
+			logger.debug("Attempt to count no. Projects");
+			return projectDao.count();
 		} catch (DaoOperationException e) {
+			logger.debug("Some thing bad occurred in DAO: " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
+		} catch (Exception e) {
+			logger.debug("Some thing unexpected: " + e.getMessage());
 			throw new ServiceOperationException(e.getMessage());
 		}
 	}
@@ -44,26 +53,63 @@ public class ProjectServiceImpl implements ProjectService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Project> searchProject(ProjectQuery criteria) 
+	public Project getProjectByNumber(int number) 
+			throws ServiceProjectNotExistsException, ServiceOperationException {
+		try {
+			logger.debug("Attempt to find Project with number: " + number);
+			return projectDao.getProjectByNumber(number);
+		} catch (DaoObjectNotFoundException e) {
+			logger.debug("Cannot find Project with number: " + number);
+			throw new ServiceProjectNotExistsException(e.getMessage());
+		} catch (DaoOperationException e) {
+			logger.debug("Some thing bad occurred in DAO: " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
+		} catch (Exception e) {
+			logger.debug("Some thing unexpected: " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<Project> searchProject(ProjectQuery criteria, int start, int max) 
 			throws ServiceInvalidInputException, ServiceOperationException {
-		
+		logger.debug("Validating criteria: " + criteria);
 		validateSearchCriteria(criteria);
 		
 		try {
-			if (criteria.getProjectNumber() != null) {
-				Project onlyOneProject = projectDao.getProjectByNumber(criteria.getProjectNumber());
+			logger.debug("Attempt to find Project with criteria: " + criteria);
+			Integer projectNumber = criteria.getProjectNumber();
+			if (projectNumber != null) {
+				logger.debug("Number present, find Project with number: " + projectNumber);
+				Project onlyOneProject = null;
+				try {
+					onlyOneProject = projectDao.getProjectByNumber(projectNumber);
+				} catch (DaoObjectNotFoundException e) {
+					logger.debug("Cannot find Project with number: " + projectNumber);
+				}
+				
 				List<Project> result = new ArrayList<Project>();
-				result.add(onlyOneProject);
+				if (onlyOneProject != null) {
+					result.add(onlyOneProject);
+				}
+				logger.debug("Return at most one Project: " + result);
 				return result;
 			}
 			
+			logger.debug("Find Projects that matches 3 rest patterns");
 			return projectDao.findProjectsMatchPatterns(
 					criteria.getProjectName(), 
 					criteria.getCustomer(), 
-					criteria.getProjectStatus());
+					criteria.getProjectStatus(), 
+					start, max);
+		} catch (DaoOperationException e) {
+			logger.debug("Some thing occurred in DAO: " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
 		} catch (Exception e) {
-			throw new ServiceOperationException(String.format(
-					"Search projects failed due to: %s", e.getMessage()));
+			logger.debug("Some thing unexpected: " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
 		}
 	}
 	
@@ -72,14 +118,15 @@ public class ProjectServiceImpl implements ProjectService {
 	 */
 	public void saveOrUpdateProject(Project project) 
 			throws ServiceInvalidInputException, ServiceOperationException {
-		
-		validateProject(project);
-		
 		try {
+			logger.debug("Attempt to save or update Project: " + project);
 			projectDao.saveOrUpdate(project);
+		} catch (DaoOperationException e) {
+			logger.debug("Some thing bad in DAO " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
 		} catch (Exception e) {
-			throw new ServiceOperationException(String.format(
-					"Update project failed due to: %s", e.getMessage()));
+			logger.debug("Some thing unexpected: " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
 		}
 	}
 	
@@ -88,10 +135,14 @@ public class ProjectServiceImpl implements ProjectService {
 	 */
 	public void deleteProject(Project project)throws ServiceOperationException {
 		try {
+			logger.debug("Attempt to delete Project; " + project);
 			projectDao.delete(project);
 		} catch (DaoOperationException e) {
-			throw new ServiceOperationException(
-					String.format("Service failed to delete Project: %s", e.getMessage()));
+			logger.debug("Some thing bad in DAO " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
+		} catch (Exception e) {
+			logger.debug("Some thing unexpected: " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
 		}
 	}
 	
@@ -101,6 +152,7 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	private void validateSearchCriteria(ProjectQuery criteria) 
 			throws ServiceInvalidInputException {
+		logger.debug("Validating criteria: " + criteria);
 		if (criteria.getProjectName() == null
 				|| (criteria.getProjectNumber() != null && criteria.getProjectNumber() < 0)
 				|| criteria.getCustomer() == null
@@ -111,9 +163,5 @@ public class ProjectServiceImpl implements ProjectService {
 			throw new ServiceInvalidInputException(
 					"Invalid search criteria: %s" + criteria.toString());
 		}
-	}
-	
-	private void validateProject(Project project) throws ServiceInvalidInputException {
-		
 	}
 }

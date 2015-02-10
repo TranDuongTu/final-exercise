@@ -18,6 +18,11 @@ public final class ModelKeys {
 	public static final String PROJECTS = "projects";
 	
 	/**
+	 * Attribute that present when search return 0 Projects match.
+	 */
+	public static final String NOT_FOUND = "notFound";
+	
+	/**
 	 * Project to show on Edit page.
 	 */
 	public static final String PROJECT = "project";

@@ -3,7 +3,9 @@ package ch.elca.training.dao.hibernate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import ch.elca.training.dao.ProjectDao;
@@ -32,20 +34,24 @@ public class HibernateProjectDaoImpl
 	 */
 	public Project getProjectByNumber(int number) 
 			throws DaoObjectNotFoundException, DaoOperationException {
+		
 		try {
 			logger.debug("Attempt to get Project with number: " + number);
+			
 			Project result = (Project) getSessionFactory().getCurrentSession()
 					.createCriteria(getType()).add(criterionNumberMatch(number))
 					.uniqueResult();
 			
 			if (result == null) {
-				logger.debug("The return Project is null");
 				throw new DaoObjectNotFoundException(
 						String.format("No Project with number %d found", number));
 			}
 			
 			logger.debug("Retrieved Project: " + result.toString());
 			return result;
+		} catch (DaoObjectNotFoundException e) {
+			logger.debug("The return Project is null");
+			throw e;
 		} catch (Exception e) {
 			logger.debug("Unexpected error occurred: " + e.getMessage());
 			throw new DaoOperationException(e.getMessage());
@@ -59,16 +65,13 @@ public class HibernateProjectDaoImpl
 			throws DaoOperationException {
 		try {
 			logger.debug("Attempt to find Project with name pattern: " + name);
-			List<?> rawList = getSessionFactory().getCurrentSession()
-					.createCriteria(getType()).add(criterionNameMatch(name))
-					.list();
-			logger.debug("Query return " + rawList.size() + " raw objects");
 			
-			List<Project> result = new ArrayList<Project>();
-			for (Object object : rawList) {
-				result.add((Project) object);
-			}
+			Criteria criteria = getSessionFactory().getCurrentSession()
+					.createCriteria(getType()).add(criterionNameMatch(name));
+			List<Project> result = findProjects(criteria);
 			
+			logger.debug("Query return " + result.size() + " projects");
+
 			return result;
 		} catch (Exception e) {
 			logger.debug("Unexpected error: " + e.getMessage());
@@ -83,16 +86,14 @@ public class HibernateProjectDaoImpl
 			throws DaoOperationException {
 		try {
 			logger.debug("Attempt to find Project with customer pattern: " + customer);
-			List<?> rawList = getSessionFactory().getCurrentSession()
+			
+			Criteria criteria = getSessionFactory().getCurrentSession()
 					.createCriteria(getType())
-					.add(criterionCustomerMatch(customer)).list();
-			logger.debug("Criteria query return " + rawList.size() + " raw objects");
+					.add(criterionCustomerMatch(customer));
+			List<Project> result = findProjects(criteria);
 			
-			List<Project> result = new ArrayList<Project>();
-			for (Object object : rawList) {
-				result.add((Project) object);
-			}
-			
+			logger.debug("Criteria query return " + result.size() + " projects");
+
 			return result;
 		} catch (Exception e) {
 			logger.debug("Unexpected error: " + e.getMessage());
@@ -107,16 +108,13 @@ public class HibernateProjectDaoImpl
 			throws DaoOperationException {
 		try {
 			logger.debug("Attempt to find Projects with Status: " + status);
-			List<?> rawList = getSessionFactory().getCurrentSession()
-					.createCriteria(getType()).add(criterionStatusMatch(status))
-					.list();
-			logger.debug("Criteria query return " + rawList.size() + " raw objects");
 			
-			List<Project> result = new ArrayList<Project>();
-			for (Object object : rawList) {
-				result.add((Project) object);
-			}
+			Criteria criteria = getSessionFactory().getCurrentSession()
+					.createCriteria(getType()).add(criterionStatusMatch(status));
+			List<Project> result = findProjects(criteria);
 			
+			logger.debug("Criteria query return " + result.size() + " projects");
+
 			return result;
 		} catch (Exception e) {
 			logger.debug("Unexpected error: " + e.getMessage());
@@ -133,16 +131,13 @@ public class HibernateProjectDaoImpl
 		try {
 			logger.debug(String.format("Attempt to find Projects with name pattern: %s;"
 					+ "customer pattern: %s; Status: %s", name, customer, status));
-			List<?> rawList = getSessionFactory().getCurrentSession()
-					.createCriteria(getType())
-					.add(criterionForMultiplePatternsMatching(name, customer, status))
-					.list();
-			logger.debug("Criteria query return " + rawList.size() + " raw objects");
 			
-			List<Project> result = new ArrayList<Project>();
-			for (Object object : rawList) {
-				result.add((Project) object);
-			}
+			Criteria criteria = getSessionFactory().getCurrentSession()
+					.createCriteria(getType())
+					.add(criterionForMultiplePatternsMatching(name, customer, status));
+			List<Project> result = findProjects(criteria);
+			
+			logger.debug("Criteria query return " + result.size() + " projects");
 			
 			return result;
 		} catch (Exception e) {
@@ -162,19 +157,17 @@ public class HibernateProjectDaoImpl
 			logger.debug(String.format("Attempt to find Projects with name pattern: %s;"
 					+ "customer pattern: %s; Status: %s. Start at: %d, length: %d", 
 						name, customer, status, start, length));
-			List<?> rawList = getSessionFactory().getCurrentSession()
+			
+			Criteria criteria = getSessionFactory().getCurrentSession()
 					.createCriteria(getType())
 					.add(criterionForMultiplePatternsMatching(name, customer, status))
+					.addOrder(Order.asc(Project.PROPERTY_NUMBER))
 					.setFirstResult(start)
-					.setMaxResults(length)
-					.list();
-			logger.debug("Criteria query return " + rawList.size() + " raw objects");
+					.setMaxResults(length);
+			List<Project> result = findProjects(criteria);
 			
-			List<Project> result = new ArrayList<Project>();
-			for (Object object : rawList) {
-				result.add((Project) object);
-			}
-			
+			logger.debug("Criteria query return " + result.size() + " projects");
+
 			return result;
 		} catch (Exception e) {
 			logger.debug("Unexpected error: " + e.getMessage());
@@ -212,5 +205,16 @@ public class HibernateProjectDaoImpl
 		} else {
 			return Restrictions.sqlRestriction("(0 = 0)");
 		}
+	}
+	
+	private List<Project> findProjects(Criteria criteria) {
+		List<?> rawList = criteria.list();
+		
+		List<Project> result = new ArrayList<Project>();
+		for (Object object : rawList) {
+			result.add((Project) object);
+		}
+		
+		return result;
 	}
 }

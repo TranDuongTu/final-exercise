@@ -9,6 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
 	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="resources/css/template.css">
 <link rel="stylesheet" type="text/css" href="resources/css/header.css">
 <link rel="stylesheet" type="text/css" href="resources/css/menu.css">
 <link rel="stylesheet" type="text/css" href="resources/css/search.css">
@@ -19,14 +20,14 @@
 	<div class="container">
 		<div class="row">
 			<!-- Left side menu -->
-			<div class="col-sm-2">
+			<div class="menu-panel col-sm-2">
 				<tiles:insertAttribute name="menu" />
 			</div>
 
 			<!-- Right side header + body -->
 			<div class="col-sm-10">
-				<tiles:insertAttribute name="header" />
-				<tiles:insertAttribute name="content" />
+				<div class="header-panel"><tiles:insertAttribute name="header" /></div>
+				<div class="content-panel"><tiles:insertAttribute name="content" /></div>
 			</div>
 		</div>
 	</div>

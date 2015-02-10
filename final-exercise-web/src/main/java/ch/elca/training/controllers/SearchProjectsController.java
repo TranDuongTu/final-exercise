@@ -1,25 +1,10 @@
-/*
- * SearchProjectsController.java
- *
- * Project: TECHWATCH - TESTING TECHNOLOGIES
- *
- * Copyright 2008 by ELCA Informatique SA
- * Av. de la Harpe 22-24, 1000 Lausanne 13
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of ELCA Informatique SA. ("Confidential Information"). You
- * shall not disclose such Confidential Information and shall
- * use it only in accordance with the terms of the license
- * agreement you entered into with ELCA.
- */
-
 package ch.elca.training.controllers;
 
 import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -63,11 +48,14 @@ public class SearchProjectsController {
 	@Autowired
 	private ProjectQueryValidator projectQueryValidator;
 	
+	private Logger logger = Logger.getLogger(getClass());
+	
 	/**
 	 * General {@link InitBinder} for {@link CustomEditor}.
 	 */
 	 @InitBinder
 	 public void generalBinding(WebDataBinder binder) {
+		 /* For converting between Status objects */
 		 binder.registerCustomEditor(Status.class, new StatusEditor());
 	 }
 	
@@ -85,7 +73,9 @@ public class SearchProjectsController {
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler({BusinessOperationException.class})
 	public String businessOperationsFailed(Model model, Exception e) {
+		logger.debug("Handle error: " + e.getMessage());
 		model.addAttribute(ModelKeys.ERROR_MESSAGE, e.getMessage());
+		logger.debug("Error page: " + ViewNames.ERROR);
 		return ViewNames.ERROR;
 	}
 
@@ -94,13 +84,20 @@ public class SearchProjectsController {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	protected String showSearchForm(Model model) {
-		
-		/* Adding default search */
-		if (!model.containsAttribute(ModelKeys.PROJECT_QUERY)) {
-			model.addAttribute(ModelKeys.PROJECT_QUERY, ProjectQuery.defaultCriteria());
+		try {
+			logger.debug("Going to serve GET request for search form");
+			
+			/* Adding default search */
+			if (!model.containsAttribute(ModelKeys.PROJECT_QUERY)) {
+				model.addAttribute(ModelKeys.PROJECT_QUERY, ProjectQuery.defaultCriteria());
+			}
+			
+			logger.debug("View name: " + ViewNames.SEARCH);
+			return ViewNames.SEARCH;
+		} catch (Exception e) {
+			logger.debug("Unexpected error when processing show search form request");
+			throw new BusinessOperationException(e.getMessage());
 		}
-
-		return ViewNames.SEARCH;
 	}
 
 	/**
@@ -114,23 +111,34 @@ public class SearchProjectsController {
     		Model model,
     		RedirectAttributes flashAttributes) {
     	
-		/* Criteria need to be validated and retained in session */
-    	if (queryBindingResult.hasErrors()) {
-    		return ViewNames.SEARCH;
-    	}
-    	model.addAttribute(ModelKeys.PROJECT_QUERY, projectSearchCriteria);
-    	
-    	/* Actual querying projects */
-    	List<Project> projects = null;
-    	try {
-    		projects = projectService.searchProject(projectSearchCriteria);
-    	} catch (ServiceOperationException e) {
-    		throw new BusinessOperationException(e.getMessage());
-    	}
-
-        /* Flash attributes for redirecting context */
-        flashAttributes.addFlashAttribute(ModelKeys.PROJECTS, projects);
-
-        return Urls.REDIRECT_PREFIX + ViewNames.SEARCH;
+		try {
+			logger.debug("Going to serve POST request when submitting search");
+			
+			/* Criteria need to be validated and retained in session */
+	    	if (queryBindingResult.hasErrors()) {
+	    		logger.debug("Binding errors for query binding");
+	    		logger.debug("View name: " + ViewNames.SEARCH);
+	    		return ViewNames.SEARCH;
+	    	}
+	    	model.addAttribute(ModelKeys.PROJECT_QUERY, projectSearchCriteria);
+	    	
+	    	/* Actual querying projects */
+	    	int count = projectService.countProjects();
+	    	List<Project> projects = projectService.searchProject(projectSearchCriteria, 0, count);
+	    	logger.debug("Totally retrieved projects: " + projects.size());
+	
+	        /* Flash attributes for redirecting context */
+	    	flashAttributes.addFlashAttribute(ModelKeys.NOT_FOUND, projects.size() == 0);
+	        flashAttributes.addFlashAttribute(ModelKeys.PROJECTS, projects);
+	
+	        logger.debug("Goto: " + Urls.REDIRECT_PREFIX + ViewNames.SEARCH);
+	        return Urls.REDIRECT_PREFIX + ViewNames.SEARCH;
+		} catch (ServiceOperationException e) {
+			logger.debug("Error when attempting to consult the Service: " + e.getMessage());
+			throw new BusinessOperationException(e.getMessage());
+		} catch (Exception e) {
+			logger.debug("Unexpected error when processing search form submit: " + e.getMessage());
+			throw new BusinessOperationException(e.getMessage());
+		}
     }
 }

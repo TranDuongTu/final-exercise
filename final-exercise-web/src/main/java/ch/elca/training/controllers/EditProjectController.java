@@ -139,7 +139,8 @@ public class EditProjectController {
     
     private void redirectProjects(ProjectQuery query, final RedirectAttributes flashAttributes) 
     		throws ServiceOperationException {
-		List<Project> projects = projectService.searchProject(query);
+    	int count = projectService.countProjects();
+		List<Project> projects = projectService.searchProject(query, 0, count);
 		flashAttributes.addFlashAttribute(ModelKeys.PROJECTS, projects);
     }
 }

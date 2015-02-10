@@ -18,19 +18,22 @@
 			<spring:hasBindErrors name="projectQuery">
 				<c:forEach items="${errors.allErrors}" var="error">
 					<c:if test="${error.code eq 'QueryNoCriteriaSet'}">
-						<c:set var="errorMessage" value="<spring:message code='error.querynocriteriaset'/>" />
-					</c:if>
-					<c:if test="${error.code eq 'QueryNumberNull'}">
-						<c:set var="errorMessage" value="<spring:message code='error.querynumbernull'/>" />
+						<spring:message code="error.searchpage.querynocriteriaset" var="errorMessage" />
 					</c:if>
 					<c:if test="${error.code eq 'QueryNumberNegative'}">
-						<c:set var="errorMessage" value="<spring:message code='error.querynumbernegative'/>" />
+						<spring:message code="error.searchpage.querynumbernegative" var="errorMessage" />
 					</c:if>
 					<c:if test="${error.code eq 'QueryNameNull'}">
-						<c:set var="errorMessage" value="<spring:message code='error.querynamenull'/>" />
+						<spring:message code="error.searchpage.querynamenull" var="errorMessage" />
 					</c:if>
 					<c:if test="${error.code eq 'QueryNameLengthExceed'}">
-						<c:set var="errorMessage" value="<spring:message code='error.querynamelengthexceed'/>" />
+						<spring:message code="error.searchpage.querynamelengthexceed" var="errorMessage" />
+					</c:if>
+					<c:if test="${error.code eq 'QueryCustomerNull'}">
+						<spring:message code="error.searchpage.querycustomernull" var="errorMessage" />
+					</c:if>
+					<c:if test="${error.code eq 'QueryCustomerLengthExceed'}">
+						<spring:message code="error.searchpage.querycustomerlengthexceed" var="errorMessage" />
 					</c:if>
 					<div class="alert alert-dismissible alert-danger">
 						<button type="button" class="close" data-dismiss="alert">×</button>
@@ -105,6 +108,11 @@
 	</form:form>
 
 	<!-- Query result -->
+	<c:if test="${notFound}">
+		<div class="well well-lg text-center">
+			<strong><spring:message code="label.searchpage.search.notfound" /></strong>
+		</div>
+	</c:if>
 	<c:if test="${not empty projects}">
 		<div class="query-result">
 			<br />

@@ -8,7 +8,7 @@ import org.springframework.validation.Validator;
 import ch.elca.training.services.searching.ProjectQuery;
 
 /**
- * Validation for {@link ProjectQuery}
+ * Validation for {@link ProjectQuery}.
  * 
  * @author DTR
  */

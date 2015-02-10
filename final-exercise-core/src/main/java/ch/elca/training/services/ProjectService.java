@@ -21,6 +21,11 @@ public interface ProjectService {
 	public static final String BEAN_NAME = "projectService";
 	
 	/**
+	 * Count {@link Project}.
+	 */
+	int countProjects() throws ServiceOperationException;
+	
+	/**
 	 * Get {@link Project} by Number.
 	 */
 	Project getProjectByNumber(int number) 
@@ -29,14 +34,14 @@ public interface ProjectService {
 	/**
 	 * Search projects based on given criteria.
 	 */
-	List<Project> searchProject(ProjectQuery criteria) 
+	List<Project> searchProject(ProjectQuery criteria, int start, int max) 
 			throws ServiceInvalidInputException, ServiceOperationException;
 	
 	/**
 	 * Update the modified project.
 	 */
 	void saveOrUpdateProject(Project project) 
-			throws ServiceInvalidInputException, ServiceOperationException;
+			throws ServiceOperationException;
 	
 	/**
 	 * Delete projects
