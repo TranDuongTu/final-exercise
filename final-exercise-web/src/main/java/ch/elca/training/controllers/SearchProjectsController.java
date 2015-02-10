@@ -106,8 +106,8 @@ public class SearchProjectsController {
 	 */
 	@RequestMapping(method = RequestMethod.POST)
     protected String submitSearch(
-    		@ModelAttribute(ModelKeys.PROJECT_QUERY) @Valid ProjectQuery projectSearchCriteria, 
-    		BindingResult queryBindingResult, 
+    		@ModelAttribute(ModelKeys.PROJECT_QUERY) @Valid ProjectQuery projectQuery, 
+    		BindingResult queryBindingResult,
     		Model model,
     		RedirectAttributes flashAttributes) {
     	
@@ -116,16 +116,21 @@ public class SearchProjectsController {
 			
 			/* Criteria need to be validated and retained in session */
 	    	if (queryBindingResult.hasErrors()) {
-	    		logger.debug("Binding errors for query binding");
+	    		logger.debug("Binding errors for query binding: " + projectQuery);
 	    		logger.debug("View name: " + ViewNames.SEARCH);
 	    		return ViewNames.SEARCH;
 	    	}
-	    	model.addAttribute(ModelKeys.PROJECT_QUERY, projectSearchCriteria);
 	    	
 	    	/* Actual querying projects */
-	    	int count = projectService.countProjects();
-	    	List<Project> projects = projectService.searchProject(projectSearchCriteria, 0, count);
+	    	logger.debug(String.format("Query Projects from %d, max %d", 
+	    			projectQuery.getStart(), projectQuery.getMax()));
+	    	List<Project> projects = projectService.searchProject(projectQuery, 
+	    			projectQuery.getStart(), projectQuery.getMax());
 	    	logger.debug("Totally retrieved projects: " + projects.size());
+	    	
+	    	/* Update Project query for the paging information */
+	    	projectQuery.setTotal(projectService.countProjectMatch(projectQuery));
+	    	model.addAttribute(ModelKeys.PROJECT_QUERY, projectQuery);
 	
 	        /* Flash attributes for redirecting context */
 	    	flashAttributes.addFlashAttribute(ModelKeys.NOT_FOUND, projects.size() == 0);

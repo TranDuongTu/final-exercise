@@ -45,4 +45,10 @@ public interface ProjectDao extends GenericDao<Project> {
 	 */
 	List<Project> findProjectsMatchPatterns(String name, String customer, Status status, int start, int length) 
 			throws DaoOperationException;
+	
+	/**
+	 * Count projects that match all given patterns.
+	 */
+	int countProjectsMatchPatterns(String name, String customer, Status status) 
+			throws DaoOperationException;
 }

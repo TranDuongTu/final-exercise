@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import ch.elca.training.dao.ProjectDao;
@@ -125,7 +126,7 @@ public class HibernateProjectDaoImpl
 	/**
 	 * {@inheritDoc}
 	 */
-	public java.util.List<Project> findProjectsMatchPatterns(
+	public List<Project> findProjectsMatchPatterns(
 			String name, String customer, Status status) throws DaoOperationException {
 		
 		try {
@@ -149,7 +150,7 @@ public class HibernateProjectDaoImpl
 	/**
 	 * {@inheritDoc}
 	 */
-	public java.util.List<Project> findProjectsMatchPatterns(
+	public List<Project> findProjectsMatchPatterns(
 			String name, String customer, Status status, int start, int length) 
 					throws DaoOperationException {
 		
@@ -168,6 +169,30 @@ public class HibernateProjectDaoImpl
 			
 			logger.debug("Criteria query return " + result.size() + " projects");
 
+			return result;
+		} catch (Exception e) {
+			logger.debug("Unexpected error: " + e.getMessage());
+			throw new DaoOperationException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public int countProjectsMatchPatterns(
+			String name, String customer, Status status) throws DaoOperationException {
+		try {
+			logger.debug(String.format("Attempt to count Projects with name pattern: %s;"
+					+ "customer pattern: %s; Status: %s", name, customer, status));
+			
+			int result = ((Long) getSessionFactory().getCurrentSession()
+					.createCriteria(getType())
+					.add(criterionForMultiplePatternsMatching(name, customer, status))
+					.setProjection(Projections.rowCount())
+					.uniqueResult()).intValue();
+			
+			logger.debug("Criteria query return " + result + " projects");
+			
 			return result;
 		} catch (Exception e) {
 			logger.debug("Unexpected error: " + e.getMessage());

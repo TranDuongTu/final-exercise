@@ -21,7 +21,8 @@ public class ProjectQueryValidator implements Validator {
 		QueryNameLengthExceed,
 		QueryCustomerNull,
 		QueryCustomerLengthExceed,
-		QueryNoCriteriaSet
+		QueryNoCriteriaSet,
+		QueryPagingIndicesInvalid,
 	}
 	
 	public boolean supports(Class<?> clazz) {
@@ -37,17 +38,16 @@ public class ProjectQueryValidator implements Validator {
 		validateCustomer(queryToBeValidated, errors);
 			
 		validateAtLeastOneCriteria(queryToBeValidated, errors);
+		
+		validatePagingIndices(queryToBeValidated, errors);
 	}
 	
 	/**
 	 * Project number search validation
 	 */
 	private void validateNumber(ProjectQuery query, Errors errors) {
-		final String REASON_NEGATIVE = "Number to query must be positive";
-		
 		if (query.getProjectNumber() != null && query.getProjectNumber() < 1) {
-			errors.rejectValue(ProjectQuery.PROPERTY_NUMBER, 
-					ErrorCode.QueryNumberNegative.toString(), REASON_NEGATIVE);
+			errors.rejectValue(ProjectQuery.PROPERTY_NUMBER, ErrorCode.QueryNumberNegative.toString());
 		}
 	}
 	
@@ -56,18 +56,12 @@ public class ProjectQueryValidator implements Validator {
 	 */
 	private static final int MAX_NAME_LENGTH = 100;
 	private void validateName(ProjectQuery query, Errors errors) {
-		final String REASON_NULL = "Name must be not null";
-		final String REASON_LENGTH_EXCEED = "Name must be less than " 
-				+ MAX_NAME_LENGTH + " characters";
-		
 		if (query.getProjectName() == null) {
-			errors.rejectValue(ProjectQuery.PROPERTY_NAME, 
-					ErrorCode.QueryNameNull.toString(), REASON_NULL);
+			errors.rejectValue(ProjectQuery.PROPERTY_NAME, ErrorCode.QueryNameNull.toString());
 		}
 		
 		if (query.getProjectName().length() > MAX_NAME_LENGTH) {
-			errors.rejectValue(ProjectQuery.PROPERTY_NAME, 
-					ErrorCode.QueryNameLengthExceed.toString(), REASON_LENGTH_EXCEED);
+			errors.rejectValue(ProjectQuery.PROPERTY_NAME, ErrorCode.QueryNameLengthExceed.toString());
 		}
 	}
 	
@@ -76,18 +70,12 @@ public class ProjectQueryValidator implements Validator {
 	 */
 	private static final int MAX_CUSTOMER_LENGTH = 500;
 	private void validateCustomer(ProjectQuery query, Errors errors) {
-		final String REASON_NULL = "Customer must be not null";
-		final String REASON_LENGTH_EXCEED = "Customer must less than "
-				+ MAX_CUSTOMER_LENGTH + " characters";
-		
 		if (query.getCustomer() == null) {
-			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, 
-					ErrorCode.QueryCustomerNull.toString(), REASON_NULL);
+			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, ErrorCode.QueryCustomerNull.toString());
 		}
 		
 		if (query.getCustomer().length() > MAX_CUSTOMER_LENGTH) {
-			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, 
-					ErrorCode.QueryCustomerLengthExceed.toString(), REASON_LENGTH_EXCEED);
+			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, ErrorCode.QueryCustomerLengthExceed.toString());
 		}
 	}
 	
@@ -95,13 +83,21 @@ public class ProjectQueryValidator implements Validator {
 	 * At least one search criteria must be set.
 	 */
 	private void validateAtLeastOneCriteria(ProjectQuery query, Errors errors) {
-		final String REASON = "At least one criteria must be set";
-		
 		if (!StringUtils.isNotBlank(query.getCustomer()) &&
 				!StringUtils.isNotBlank(query.getProjectName()) &&
 				query.getProjectStatus() == null &&
 				query.getProjectNumber() == null) {
-			errors.reject(ErrorCode.QueryNoCriteriaSet.toString(), REASON);
+			errors.reject(ErrorCode.QueryNoCriteriaSet.toString());
+		}
+	}
+	
+	/**
+	 * Paging indices.
+	 */
+	private void validatePagingIndices(ProjectQuery query, Errors errors) {
+		if (query.getStart() < 0 || query.getMax() <= 0
+				|| (query.getStart() >= query.getTotal())) {
+			errors.reject(ErrorCode.QueryPagingIndicesInvalid.toString());
 		}
 	}
 }

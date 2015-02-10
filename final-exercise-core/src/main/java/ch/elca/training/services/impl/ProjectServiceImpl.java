@@ -116,6 +116,44 @@ public class ProjectServiceImpl implements ProjectService {
 	/**
 	 * {@inheritDoc}
 	 */
+	public int countProjectMatch(ProjectQuery criteria)
+			throws ServiceOperationException {
+		logger.debug("Validating criteria: " + criteria);
+		validateSearchCriteria(criteria);
+		
+		try {
+			logger.debug("Attempt to count Projects match: " + criteria);
+			Integer projectNumber = criteria.getProjectNumber();
+			if (projectNumber != null) {
+				logger.debug("Number present, count with number: " + projectNumber);
+				Project onlyOneProject;
+				try {
+					onlyOneProject = projectDao.getProjectByNumber(projectNumber);
+				} catch (DaoObjectNotFoundException e) {
+					logger.debug("Cannot find Project with number: " + projectNumber);
+					onlyOneProject = null;
+				}
+
+				return onlyOneProject == null ? 0 : 1;
+			}
+			
+			logger.debug("Find Projects that matches 3 rest patterns");
+			return projectDao.countProjectsMatchPatterns(
+					criteria.getProjectName(), 
+					criteria.getCustomer(), 
+					criteria.getProjectStatus());
+		} catch (DaoOperationException e) {
+			logger.debug("Some thing occurred in DAO: " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
+		} catch (Exception e) {
+			logger.debug("Some thing unexpected: " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void saveOrUpdateProject(Project project) 
 			throws ServiceInvalidInputException, ServiceOperationException {
 		try {

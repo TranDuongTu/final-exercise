@@ -38,6 +38,11 @@ public interface ProjectService {
 			throws ServiceInvalidInputException, ServiceOperationException;
 	
 	/**
+	 * Count number of Projects that match given criteria.
+	 */
+	int countProjectMatch(ProjectQuery projectQuery) throws ServiceOperationException;
+	
+	/**
 	 * Update the modified project.
 	 */
 	void saveOrUpdateProject(Project project) 

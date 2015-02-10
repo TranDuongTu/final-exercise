@@ -4,7 +4,7 @@
 
 <div class="search-panel">
 	<!-- Form -->
-	<form:form role="form" class="form-horizontal" method="POST"
+	<form:form id="searchForm" role="form" class="form-horizontal" method="POST"
 		action="${pageContext.request.contextPath}/search"
 		commandName="projectQuery">
 
@@ -34,6 +34,9 @@
 					</c:if>
 					<c:if test="${error.code eq 'QueryCustomerLengthExceed'}">
 						<spring:message code="error.searchpage.querycustomerlengthexceed" var="errorMessage" />
+					</c:if>
+					<c:if test="${error.code eq 'QueryPagingIndicesInvalid'}">
+						<spring:message code="error.searchpage.querypagingindicesinvalid" var="errorMessage" />
 					</c:if>
 					<div class="alert alert-dismissible alert-danger">
 						<button type="button" class="close" data-dismiss="alert">×</button>
@@ -97,7 +100,7 @@
 		<!-- Button group -->
 		<div class="form-group text-center">
 			<div class="btn-group">
-				<button type="submit" class="btn btn-danger">
+				<button type="submit" class="btn btn-danger" onclick="toFirst()">
 					<b><spring:message code="button.searchpage.search" /></b>
 				</button>
 				<button type="reset" class="btn btn-default">
@@ -105,63 +108,116 @@
 				</button>
 			</div>
 		</div>
-	</form:form>
+	
 
-	<!-- Query result -->
-	<c:if test="${notFound}">
-		<div class="well well-lg text-center">
-			<strong><spring:message code="label.searchpage.search.notfound" /></strong>
-		</div>
-	</c:if>
-	<c:if test="${not empty projects}">
-		<div class="query-result">
-			<br />
-			<!-- Top pager and delete button -->
-			<div>
-				<button type="submit" class="btn btn-default btn-sm col-md-2">Delete</button>
-				<ul class="pager col-md-offset-2">
-					<li><a href="#"><spring:message code="button.searchpage.first" /></a></li>
-					<li><a href="#"><spring:message code="button.searchpage.previous" /></a></li>
-					<li><a href="#"><spring:message code="button.searchpage.next" /></a></li>
-					<li><a href="#"><spring:message code="button.searchpage.last" /></a></li>
-				</ul>
+		<!-- Query result -->
+		<c:if test="${notFound}">
+			<div class="well well-lg text-center">
+				<strong><spring:message code="label.searchpage.search.notfound" /></strong>
 			</div>
-
-			<!-- Result table -->
-			<table class="table table-striped table-hover">
-				<thead>
-					<tr>
-						<th></th>
-						<th><spring:message code="label.searchpage.table.no" /></th>
-						<th><spring:message code="label.searchpage.table.name" /></th>
-						<th><spring:message code="label.searchpage.table.status" /></th>
-						<th><spring:message code="label.searchpage.table.customer" /></th>
-						<th><spring:message code="label.searchpage.table.startdate" /></th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach items="${projects}" var="project" varStatus="row">
+		</c:if>
+		<c:if test="${not empty projects}">
+			<div class="query-result">
+				<br />
+				<!-- Top pager and delete button -->
+				<div>
+					<button type="submit" class="btn btn-default btn-sm col-md-2">Delete</button>
+					
+					<!-- Bottom pager -->
+					<div class="pager-bottom pull-right">
+						<button type="submit" class="btn" onclick="toFirst()">
+							<b><spring:message code="button.searchpage.first" /></b>
+						</button>
+						<button type="submit" class="btn" onclick="previous()">
+							<b><spring:message code="button.searchpage.previous" /></b>
+						</button>
+						<button type="submit" class="btn" onclick="next()">
+							<b><spring:message code="button.searchpage.next" /></b>
+						</button>
+						<button type="submit" class="btn" onclick="toLast()">
+							<b><spring:message code="button.searchpage.last" /></b>
+						</button>
+					</div>
+				</div>
+	
+				<!-- Result table -->
+				<table class="table table-striped table-hover">
+					<thead>
 						<tr>
-							<td><input type="checkbox" /></td>
-							<td><a href="${pageContext.request.contextPath}/edit?pnumber=${project.number}">
-								<c:out value="${project.number}" />
-							</a></td>
-							<td><c:out value="${project.name}" /></td>
-							<td><c:out value="${project.status}" /></td>
-							<td><c:out value="${project.customer}" /></td>
-							<td><c:out value="${project.startDate}" /></td>
+							<th></th>
+							<th><spring:message code="label.searchpage.table.no" /></th>
+							<th><spring:message code="label.searchpage.table.name" /></th>
+							<th><spring:message code="label.searchpage.table.status" /></th>
+							<th><spring:message code="label.searchpage.table.customer" /></th>
+							<th><spring:message code="label.searchpage.table.startdate" /></th>
 						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
-
-			<!-- Bottom pager -->
-			<ul class="pager">
-				<li><a href="#"><spring:message code="button.searchpage.first" /></a></li>
-				<li><a href="#"><spring:message code="button.searchpage.previous" /></a></li>
-				<li><a href="#"><spring:message code="button.searchpage.next" /></a></li>
-				<li><a href="#"><spring:message code="button.searchpage.last" /></a></li>
-			</ul>
-		</div>
-	</c:if>
+					</thead>
+					<tbody>
+						<c:forEach items="${projects}" var="project" varStatus="row">
+							<tr>
+								<td><input type="checkbox" /></td>
+								<td><a href="${pageContext.request.contextPath}/edit?pnumber=${project.number}">
+									<c:out value="${project.number}" />
+								</a></td>
+								<td><c:out value="${project.name}" /></td>
+								<td><c:out value="${project.status}" /></td>
+								<td><c:out value="${project.customer}" /></td>
+								<td><c:out value="${project.startDate}" /></td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+	
+				<!-- Bottom pager -->
+				<div class="pager-bottom pull-right">
+					<button type="submit" class="btn" onclick="toFirst()">
+						<b><spring:message code="button.searchpage.first" /></b>
+					</button>
+					<button type="submit" class="btn" onclick="previous()">
+						<b><spring:message code="button.searchpage.previous" /></b>
+					</button>
+					<button type="submit" class="btn" onclick="next()">
+						<b><spring:message code="button.searchpage.next" /></b>
+					</button>
+					<button type="submit" class="btn" onclick="toLast()">
+						<b><spring:message code="button.searchpage.last" /></b>
+					</button>
+				</div>
+			</div>
+		</c:if>
+		
+		<form:hidden id="totalField" path="total" />
+		<form:hidden id="startField" path="start" />
+		<form:hidden id="maxField" path="max" />
+		
+		<!-- JS -->
+		<script type="text/javascript">
+			function toFirst() {
+				document.getElementById('startField').value = 0;
+			}
+			
+			function toLast() {
+				var total = parseInt(document.getElementById('totalField').value);
+				var max = parseInt(document.getElementById('maxField').value);
+				document.getElementById('startField').value = total - (total % max);
+			}
+			
+			function previous() {
+				var currentStart = parseInt(document.getElementById('startField').value);
+				var max = parseInt(document.getElementById('maxField').value);
+				if (currentStart - max >= 0) {
+					document.getElementById('startField').value = currentStart - max;
+				}
+			}
+			
+			function next() {
+				var total = parseInt(document.getElementById('totalField').value);
+				var max = parseInt(document.getElementById('maxField').value);
+				var currentStart = parseInt(document.getElementById('startField').value);
+				if (currentStart + max < total) {
+					document.getElementById('startField').value = currentStart + max;
+				}
+			}
+		</script>
+	</form:form>
 </div>
