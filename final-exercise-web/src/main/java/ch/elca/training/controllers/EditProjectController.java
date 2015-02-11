@@ -101,11 +101,14 @@ public class EditProjectController extends BaseController {
     			logger.debug("Project found");
     		} catch (ServiceProjectNotExistsException e) {
     			logger.debug("Cannot retrieve Project");
-    			project = null;
+    			project = new Project();
+    			project.setStartDate(new Date());
+    			project.setEndDate(new Date());
     		}
     		model.addAttribute(ModelKeys.PROJECT, project);
             
     		logger.info("Return view name: " + ViewNames.EDIT);
+    		model.addAttribute(ModelKeys.PAGE, "edit");
             return ViewNames.EDIT;
     	} catch (ServiceOperationException e) {
     		logger.debug("Unexpected thing occurred: " + e.getMessage());
@@ -146,7 +149,6 @@ public class EditProjectController extends BaseController {
 			
 			logger.info("Redirect to: " + Urls.SEARCH + Urls.SEARCH_BACK);
 			return Urls.REDIRECT_PREFIX + Urls.SEARCH + Urls.SEARCH_BACK;
-			
 		} catch (ServiceOperationException e) {
 			logger.debug("Some thing unexpected: " + e.getMessage());
 			throw new BusinessOperationException(e.getMessage());

@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.http.HttpStatus;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
 
 import ch.elca.training.constants.ModelKeys;
 import ch.elca.training.constants.ViewNames;
@@ -38,10 +38,15 @@ public abstract class BaseController implements MessageSourceAware {
 	 */
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler({BusinessOperationException.class})
-	public String businessOperationsFailed(Model model, Exception e) {
-		logger.debug("Handle error: " + e.getMessage());
-		model.addAttribute(ModelKeys.ERROR_MESSAGE, e.getMessage());
-		logger.debug("Error page: " + ViewNames.ERROR);
-		return ViewNames.ERROR;
+	public ModelAndView businessOperationsFailed(Exception e) {
+		logger.debug("Handle error in Handler Method: " + e.getMessage());
+		
+		ModelAndView mav = new ModelAndView();
+		mav.addObject(ModelKeys.ERROR_MESSAGE, e.getMessage());
+		
+		logger.debug("Goto error page: " + ViewNames.ERROR);
+		mav.setViewName(ViewNames.ERROR);
+		
+		return mav;
 	}
 }

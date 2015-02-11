@@ -7,6 +7,11 @@ package ch.elca.training.constants;
  */
 public final class ModelKeys {
 	
+	/**
+	 * Indicate which page we are currently in.
+	 */
+	public static final String PAGE = "page";
+	
 	// ========================================================================
 	// SEARCH PAGE
 	// ========================================================================

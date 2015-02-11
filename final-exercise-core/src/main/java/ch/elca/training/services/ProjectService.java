@@ -15,7 +15,7 @@ import ch.elca.training.services.searching.ProjectQuery;
  * 
  * @author DTR
  */
-@Transactional
+@Transactional(rollbackFor = ServiceOperationException.class)
 public interface ProjectService {
 	
 	public static final String BEAN_NAME = "projectService";

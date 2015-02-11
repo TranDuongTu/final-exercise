@@ -9,5 +9,5 @@ public final class ViewNames {
 	public static final String HOME = "home";
 	public static final String SEARCH = "search";
 	public static final String EDIT = "edit";
-	public static final String ERROR = "error";
+	public static final String ERROR = "business_error";
 }

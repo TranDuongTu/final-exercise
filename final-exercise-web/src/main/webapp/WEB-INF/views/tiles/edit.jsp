@@ -92,7 +92,7 @@
 				</form:select>
 			</div>
 		</div>
-
+		
 		<!-- Input start date -->
 		<div class="form-group">
 			<label for="inputStartDate" class="col-md-2 control-label">
@@ -100,7 +100,7 @@
 			</label>
 			<div class="col-md-10">
 				<form:input path="startDate" cssClass="form-control"
-					id="inputStartDate" placeholder="Start Date" />
+					id="inputStartDate" placeholder="Start Date" readonly="true" />
 			</div>
 		</div>
 
@@ -111,7 +111,7 @@
 			</label>
 			<div class="col-md-10">
 				<form:input path="endDate" cssClass="form-control" id="inputEndDate"
-					placeholder="End Date" />
+					placeholder="End Date" readonly="true" />
 			</div>
 		</div>
 
@@ -126,10 +126,27 @@
 				</a>
 			</div>
 		</div>
+		
+		<!-- I18N date format -->
+		<div id="dateFormatString" style="display: none;">
+			<spring:message code="format.date" />
+		</div>
 	</form:form>
 	
 	<!-- JS -->
 	<script type="text/javascript">
+		$(function() {
+			var dateFormat = $("#dateFormatString").html();
+			dateFormat = dateFormat.toLowerCase().replace("yy", "");
+			
+			$("#inputStartDate").datepicker({
+				dateFormat: dateFormat
+			});
+			$("#inputEndDate").datepicker({
+				dateFormat: dateFormat
+			});
+		});
+	
 	    function onCancel() {
 	        var newURL = document.URL + "&_cancel";
 	        document.location=newURL;

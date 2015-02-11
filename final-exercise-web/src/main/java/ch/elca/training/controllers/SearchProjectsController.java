@@ -75,6 +75,7 @@ public class SearchProjectsController extends BaseController {
 			}
 			
 			logger.info("View name: " + ViewNames.SEARCH);
+			model.addAttribute(ModelKeys.PAGE, "search");
 			return ViewNames.SEARCH;
 		} catch (Exception e) {
 			logger.debug("Unexpected error when processing show search form request");
