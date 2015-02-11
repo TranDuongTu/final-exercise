@@ -20,9 +20,7 @@ import ch.elca.training.constants.ModelKeys;
 import ch.elca.training.constants.Urls;
 import ch.elca.training.constants.ViewNames;
 import ch.elca.training.dom.Project;
-import ch.elca.training.dom.Status;
 import ch.elca.training.exceptions.BusinessOperationException;
-import ch.elca.training.propertyeditors.StatusEditor;
 import ch.elca.training.services.ProjectService;
 import ch.elca.training.services.exceptions.ServiceOperationException;
 import ch.elca.training.services.searching.ProjectQuery;
@@ -43,15 +41,6 @@ public class SearchProjectsController extends BaseController {
 	
 	@Autowired
 	private ProjectQueryValidator projectQueryValidator;
-	
-	/**
-	 * General {@link InitBinder} for {@link CustomEditor}.
-	 */
-	 @InitBinder
-	 public void generalBinding(WebDataBinder binder) {
-		 /* For converting between Status objects */
-		 binder.registerCustomEditor(Status.class, new StatusEditor());
-	 }
 	
 	/**
 	 * {@link InitBinder} for {@link ProjectQuery}.
@@ -136,6 +125,8 @@ public class SearchProjectsController extends BaseController {
 	    	if (queryBindingResult.hasErrors()) {
 	    		logger.debug("Binding errors for query binding: " + projectQuery);
 	    		logger.info("View name: " + ViewNames.SEARCH);
+	    		
+	    		model.addAttribute(ModelKeys.PAGE, "search");
 	    		return ViewNames.SEARCH;
 	    	}
 	    	

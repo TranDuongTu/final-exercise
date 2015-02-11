@@ -1,13 +1,11 @@
 package ch.elca.training.controllers;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -63,13 +61,6 @@ public class EditProjectController extends BaseController {
 	@InitBinder(ModelKeys.PROJECT)
 	public void projectBinding(WebDataBinder binder, Locale locale) {
 		binder.setValidator(projectValidator);
-		
-		// CustomDateEditor for converting date string
-		String formatString = messageSource.getMessage(
-				FORMAT_DATE_KEY, null, DEFAULT_DATE_FORMAT, locale);
-    	SimpleDateFormat dateFormat = new SimpleDateFormat(formatString);
-        binder.registerCustomEditor(Date.class, new CustomDateEditor(
-                dateFormat, false));
 	}
 	
 	/**
@@ -121,6 +112,7 @@ public class EditProjectController extends BaseController {
 	 */
     @RequestMapping(method = RequestMethod.POST)
     protected String onSubmitProject(
+    		@ModelAttribute(ModelKeys.PROJECT_QUERY) ProjectQuery projectQuery,
     		@ModelAttribute(ModelKeys.PROJECT) @Valid Project project,
     		BindingResult projectBindingResult, 
     		final RedirectAttributes flashAttributes,
@@ -132,6 +124,8 @@ public class EditProjectController extends BaseController {
 			if (projectBindingResult.hasErrors()) {
 				logger.debug("Biding error for Project: " + project);
 				logger.info("Returning View: " + ViewNames.EDIT);
+				
+				model.addAttribute(ModelKeys.PAGE, "edit");
 	    		return ViewNames.EDIT;
 	    	}
 			

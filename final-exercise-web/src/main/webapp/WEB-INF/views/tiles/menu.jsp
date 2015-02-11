@@ -18,7 +18,7 @@
 	</c:if>
 
 	<!-- Navigation menu -->
-	<div class="well well-lg">
+	<div class="menu-content">
 		<div>
 			<h5>
 				<a href="#"><b><spring:message code="label.menu.menuhead" /></b></a>

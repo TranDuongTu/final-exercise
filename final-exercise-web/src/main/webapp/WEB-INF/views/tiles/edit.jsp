@@ -44,7 +44,7 @@
 			<div class="col-md-10">
 				<c:choose>
 					<c:when test="${project.id > 0}">
-						<form:hidden path="number" />
+						<form:hidden path="number" id="pnumber" />
 						<form:input path="number" cssClass="form-control" id="inputNumber"
 							type="number" placeholder="Project number" disabled="true" />
 					</c:when>
@@ -148,7 +148,9 @@
 		});
 	
 	    function onCancel() {
-	        var newURL = document.URL + "&_cancel";
+	        var newURL = document.URL 
+	        	+ "&pnumber=" + $("#pnumber").val() 
+	        	+ "&_cancel";
 	        document.location=newURL;
 	    }
 	</script>

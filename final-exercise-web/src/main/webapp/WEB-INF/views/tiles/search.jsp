@@ -1,6 +1,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <div class="search-panel">
 	<!-- Form -->
@@ -99,10 +100,12 @@
 		<div class="form-group text-center">
 			<div class="btn-group">
 				<button type="submit" class="btn btn-danger" onclick="toFirst()">
+					<span class="glyphicon glyphicon-search" aria-hidden="true"></span> 
 					<b><spring:message code="button.searchpage.search" /></b>
 				</button>
 				<button type="reset" class="btn btn-default">
-					<b><spring:message code="button.searchpage.reset" /></b>
+					<b><spring:message code="button.searchpage.reset" /></b> 
+					<span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
 				</button>
 			</div>
 		</div>
@@ -117,23 +120,32 @@
 		<c:if test="${not empty projects}">
 			<div class="query-result">
 				<br />
+				<!-- Format string -->
+				<spring:message code="format.date" var="dateFormat" />
+				
 				<!-- Top pager and delete button -->
 				<div>
-					<button type="submit" class="btn btn-default btn-sm col-md-2">Delete</button>
+					<button type="submit" class="btn btn-default btn-sm col-md-2">
+						<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+					</button>
 					
 					<!-- Bottom pager -->
 					<div class="pager-bottom pull-right">
 						<button type="submit" class="btn" onclick="toFirst()">
+							<span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span> 
 							<b><spring:message code="button.searchpage.first" /></b>
 						</button>
 						<button type="submit" class="btn" onclick="previous()">
+							<span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span> 
 							<b><spring:message code="button.searchpage.previous" /></b>
 						</button>
 						<button type="submit" class="btn" onclick="next()">
-							<b><spring:message code="button.searchpage.next" /></b>
+							<b><spring:message code="button.searchpage.next" /></b> 
+							<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
 						</button>
 						<button type="submit" class="btn" onclick="toLast()">
-							<b><spring:message code="button.searchpage.last" /></b>
+							<b><spring:message code="button.searchpage.last" /></b> 
+							<span class="glyphicon glyphicon-fast-forward" aria-hidden="true"></span>
 						</button>
 					</div>
 				</div>
@@ -152,6 +164,10 @@
 					</thead>
 					<tbody>
 						<c:forEach items="${projects}" var="project" varStatus="row">
+							<!-- For formating date -->
+							<fmt:formatDate value="${project.startDate}" pattern="${dateFormat}" var="formattedStartDate" />
+							
+							<!-- Row data -->
 							<tr>
 								<td><input type="checkbox" /></td>
 								<td><a href="${pageContext.request.contextPath}/edit?pnumber=${project.number}">
@@ -160,7 +176,7 @@
 								<td><c:out value="${project.name}" /></td>
 								<td><c:out value="${project.status}" /></td>
 								<td><c:out value="${project.customer}" /></td>
-								<td><c:out value="${project.startDate}" /></td>
+								<td><c:out value="${formattedStartDate}" /></td>
 							</tr>
 						</c:forEach>
 					</tbody>
@@ -169,16 +185,20 @@
 				<!-- Bottom pager -->
 				<div class="pager-bottom pull-right">
 					<button type="submit" class="btn" onclick="toFirst()">
+						<span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span> 
 						<b><spring:message code="button.searchpage.first" /></b>
 					</button>
 					<button type="submit" class="btn" onclick="previous()">
+						<span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span> 
 						<b><spring:message code="button.searchpage.previous" /></b>
 					</button>
 					<button type="submit" class="btn" onclick="next()">
-						<b><spring:message code="button.searchpage.next" /></b>
+						<b><spring:message code="button.searchpage.next" /></b> 
+						<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
 					</button>
 					<button type="submit" class="btn" onclick="toLast()">
-						<b><spring:message code="button.searchpage.last" /></b>
+						<b><spring:message code="button.searchpage.last" /></b> 
+						<span class="glyphicon glyphicon-fast-forward" aria-hidden="true"></span>
 					</button>
 				</div>
 			</div>
