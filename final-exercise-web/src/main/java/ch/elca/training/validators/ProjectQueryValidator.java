@@ -6,6 +6,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.elca.training.services.searching.ProjectQuery;
+import ch.elca.training.validators.errorcode.ErrorCode;
 
 /**
  * Validation for {@link ProjectQuery}.
@@ -14,16 +15,6 @@ import ch.elca.training.services.searching.ProjectQuery;
  */
 @Component
 public class ProjectQueryValidator implements Validator {
-	
-	public static enum ErrorCode {
-		QueryNumberNegative,
-		QueryNameNull,
-		QueryNameLengthExceed,
-		QueryCustomerNull,
-		QueryCustomerLengthExceed,
-		QueryNoCriteriaSet,
-		QueryPagingIndicesInvalid,
-	}
 	
 	public boolean supports(Class<?> clazz) {
 		return ProjectQuery.class.equals(clazz);
@@ -47,7 +38,7 @@ public class ProjectQueryValidator implements Validator {
 	 */
 	private void validateNumber(ProjectQuery query, Errors errors) {
 		if (query.getProjectNumber() != null && query.getProjectNumber() < 1) {
-			errors.rejectValue(ProjectQuery.PROPERTY_NUMBER, ErrorCode.QueryNumberNegative.toString());
+			errors.rejectValue(ProjectQuery.PROPERTY_NUMBER, ErrorCode.QueryNumberNegative.getCode());
 		}
 	}
 	
@@ -57,11 +48,11 @@ public class ProjectQueryValidator implements Validator {
 	private static final int MAX_NAME_LENGTH = 100;
 	private void validateName(ProjectQuery query, Errors errors) {
 		if (query.getProjectName() == null) {
-			errors.rejectValue(ProjectQuery.PROPERTY_NAME, ErrorCode.QueryNameNull.toString());
+			errors.rejectValue(ProjectQuery.PROPERTY_NAME, ErrorCode.QueryNameNull.getCode());
 		}
 		
 		if (query.getProjectName().length() > MAX_NAME_LENGTH) {
-			errors.rejectValue(ProjectQuery.PROPERTY_NAME, ErrorCode.QueryNameLengthExceed.toString());
+			errors.rejectValue(ProjectQuery.PROPERTY_NAME, ErrorCode.QueryNameLengthExceed.getCode());
 		}
 	}
 	
@@ -71,11 +62,11 @@ public class ProjectQueryValidator implements Validator {
 	private static final int MAX_CUSTOMER_LENGTH = 500;
 	private void validateCustomer(ProjectQuery query, Errors errors) {
 		if (query.getCustomer() == null) {
-			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, ErrorCode.QueryCustomerNull.toString());
+			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, ErrorCode.QueryCustomerNull.getCode());
 		}
 		
 		if (query.getCustomer().length() > MAX_CUSTOMER_LENGTH) {
-			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, ErrorCode.QueryCustomerLengthExceed.toString());
+			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, ErrorCode.QueryCustomerLengthExceed.getCode());
 		}
 	}
 	
@@ -87,7 +78,7 @@ public class ProjectQueryValidator implements Validator {
 				!StringUtils.isNotBlank(query.getProjectName()) &&
 				query.getProjectStatus() == null &&
 				query.getProjectNumber() == null) {
-			errors.reject(ErrorCode.QueryNoCriteriaSet.toString());
+			errors.reject(ErrorCode.QueryNoCriteriaSet.getCode());
 		}
 	}
 	
@@ -96,7 +87,7 @@ public class ProjectQueryValidator implements Validator {
 	 */
 	private void validatePagingIndices(ProjectQuery query, Errors errors) {
 		if (query.getMax() <= 0) {
-			errors.reject(ErrorCode.QueryPagingIndicesInvalid.toString());
+			errors.reject(ErrorCode.QueryPagingIndicesInvalid.getCode());
 		}
 	}
 }

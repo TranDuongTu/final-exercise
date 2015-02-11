@@ -8,6 +8,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.elca.training.dom.Project;
+import ch.elca.training.validators.errorcode.ErrorCode;
 
 /**
  * Validation for {@link Project}.
@@ -16,18 +17,6 @@ import ch.elca.training.dom.Project;
  */
 @Component
 public class ProjectValidator implements Validator {
-	
-	public static enum ErrorCode {
-		ProjectNumberNull,
-		ProjectNumberNegative,
-		ProjectNameBlank,
-		ProjectNameLengthExceed,
-		ProjectCustomerBlank,
-		ProjectCustomerLengthExceed,
-		ProjectStatusNull,
-		ProjectStartDateNull,
-		ProjectEndDateLessThanStartDate,
-	}
 	
 	public boolean supports(Class<?> clazz) {
 		return Project.class.equals(clazz);
@@ -48,9 +37,9 @@ public class ProjectValidator implements Validator {
 	 */
 	private void validateNumber(Project project, Errors errors) {
 		if (project.getNumber() == null) {
-			errors.rejectValue(Project.PROPERTY_NUMBER, ErrorCode.ProjectNumberNull.toString());
+			errors.rejectValue(Project.PROPERTY_NUMBER, ErrorCode.ProjectNumberNull.getCode());
 		} else if (project.getNumber() < 1) {
-			errors.rejectValue(Project.PROPERTY_NUMBER, ErrorCode.ProjectNumberNegative.toString());
+			errors.rejectValue(Project.PROPERTY_NUMBER, ErrorCode.ProjectNumberNegative.getCode());
 		}
 	}
 	
@@ -60,9 +49,9 @@ public class ProjectValidator implements Validator {
 	public static final int MAX_NAME_LENGTH = 100;
 	private void validateName(Project project, Errors errors) {
 		if (StringUtils.isBlank(project.getName())) {
-			errors.rejectValue(Project.PROPERTY_NAME, ErrorCode.ProjectNameBlank.toString());
+			errors.rejectValue(Project.PROPERTY_NAME, ErrorCode.ProjectNameBlank.getCode());
 		} else if (project.getName().length() > MAX_NAME_LENGTH) {
-			errors.rejectValue(Project.PROPERTY_NAME, ErrorCode.ProjectNameLengthExceed.toString());
+			errors.rejectValue(Project.PROPERTY_NAME, ErrorCode.ProjectNameLengthExceed.getCode());
 		}
 	}
 	
@@ -72,9 +61,9 @@ public class ProjectValidator implements Validator {
 	private static final int MAX_CUSTOMER_LENGTH = 500;
 	private void validateCustomer(Project project, Errors errors) {
 		if (!StringUtils.isNotBlank(project.getCustomer())) {
-			errors.rejectValue(Project.PROPERTY_CUSTOMER, ErrorCode.ProjectCustomerBlank.toString());
+			errors.rejectValue(Project.PROPERTY_CUSTOMER, ErrorCode.ProjectCustomerBlank.getCode());
 		} else if (project.getCustomer().length() > MAX_CUSTOMER_LENGTH) {
-			errors.rejectValue(Project.PROPERTY_CUSTOMER, ErrorCode.ProjectCustomerLengthExceed.toString());
+			errors.rejectValue(Project.PROPERTY_CUSTOMER, ErrorCode.ProjectCustomerLengthExceed.getCode());
 		}
 	}
 	
@@ -83,7 +72,7 @@ public class ProjectValidator implements Validator {
 	 */
 	private void validateStatus(Project project, Errors errors) {
 		if (project.getStatus() == null) {
-			errors.rejectValue(Project.PROPERTY_STATUS, ErrorCode.ProjectStatusNull.toString());
+			errors.rejectValue(Project.PROPERTY_STATUS, ErrorCode.ProjectStatusNull.getCode());
 		}
 	}
 	
@@ -92,7 +81,7 @@ public class ProjectValidator implements Validator {
 	 */
 	private void validateDates(Project project, Errors errors) {
 		if (project.getStartDate() == null) {
-			errors.rejectValue(Project.PROPERTY_START_DATE, ErrorCode.ProjectStartDateNull.toString());
+			errors.rejectValue(Project.PROPERTY_START_DATE, ErrorCode.ProjectStartDateNull.getCode());
 		}
 		
 		else if (project.getEndDate() != null) {
@@ -100,7 +89,7 @@ public class ProjectValidator implements Validator {
 			Date endDate = project.getEndDate();
 			
 			if (endDate.getTime() - startDate.getTime() < 0) {
-				errors.reject(ErrorCode.ProjectEndDateLessThanStartDate.toString());
+				errors.reject(ErrorCode.ProjectEndDateLessThanStartDate.getCode());
 			}
 		}
 	}

@@ -12,32 +12,30 @@
 		<legend>
 			<b><spring:message code="title.searchpage" /></b>
 		</legend>
+		
+		<!-- Message back from EDIT page -->
+		<c:if test="${not empty isSuccess}">
+			<div>
+				<c:choose>
+					<c:when test="${isSuccess}">
+						<div class="alert alert-success text-center">
+							<strong>Successfully update Project</strong>
+						</div>
+					</c:when>
+					<c:otherwise>
+						<div class="alert alert-warning text-center">
+							<strong>Unsuccessfully update Project</strong>
+						</div>
+					</c:otherwise>
+				</c:choose>
+			</div>
+		</c:if>
 
 		<!-- Check error and show error message -->
 		<div class="errors-panel">
 			<spring:hasBindErrors name="projectQuery">
 				<c:forEach items="${errors.allErrors}" var="error">
-					<c:if test="${error.code eq 'QueryNoCriteriaSet'}">
-						<spring:message code="error.searchpage.querynocriteriaset" var="errorMessage" />
-					</c:if>
-					<c:if test="${error.code eq 'QueryNumberNegative'}">
-						<spring:message code="error.searchpage.querynumbernegative" var="errorMessage" />
-					</c:if>
-					<c:if test="${error.code eq 'QueryNameNull'}">
-						<spring:message code="error.searchpage.querynamenull" var="errorMessage" />
-					</c:if>
-					<c:if test="${error.code eq 'QueryNameLengthExceed'}">
-						<spring:message code="error.searchpage.querynamelengthexceed" var="errorMessage" />
-					</c:if>
-					<c:if test="${error.code eq 'QueryCustomerNull'}">
-						<spring:message code="error.searchpage.querycustomernull" var="errorMessage" />
-					</c:if>
-					<c:if test="${error.code eq 'QueryCustomerLengthExceed'}">
-						<spring:message code="error.searchpage.querycustomerlengthexceed" var="errorMessage" />
-					</c:if>
-					<c:if test="${error.code eq 'QueryPagingIndicesInvalid'}">
-						<spring:message code="error.searchpage.querypagingindicesinvalid" var="errorMessage" />
-					</c:if>
+					<spring:message code="${error.code}" var="errorMessage" />
 					<div class="alert alert-dismissible alert-danger">
 						<button type="button" class="close" data-dismiss="alert">×</button>
 						<strong><c:out value="${errorMessage}" /></strong>

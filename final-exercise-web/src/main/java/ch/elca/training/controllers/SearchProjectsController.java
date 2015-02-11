@@ -4,19 +4,15 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -40,15 +36,13 @@ import ch.elca.training.validators.ProjectQueryValidator;
 @Controller
 @RequestMapping(Urls.SEARCH)
 @SessionAttributes(value = {ModelKeys.PROJECT_QUERY})
-public class SearchProjectsController {
+public class SearchProjectsController extends BaseController {
 
 	@Autowired
 	private ProjectService projectService;
 	
 	@Autowired
 	private ProjectQueryValidator projectQueryValidator;
-	
-	private Logger logger = Logger.getLogger(getClass());
 	
 	/**
 	 * General {@link InitBinder} for {@link CustomEditor}.
@@ -66,18 +60,6 @@ public class SearchProjectsController {
 	public void projectQueryBinding(WebDataBinder binder) {
 		binder.setValidator(projectQueryValidator);
 	}
-	
-	/**
-	 * Handle all business level errors.
-	 */
-	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-	@ExceptionHandler({BusinessOperationException.class})
-	public String businessOperationsFailed(Model model, Exception e) {
-		logger.debug("Handle error: " + e.getMessage());
-		model.addAttribute(ModelKeys.ERROR_MESSAGE, e.getMessage());
-		logger.debug("Error page: " + ViewNames.ERROR);
-		return ViewNames.ERROR;
-	}
 
 	/**
 	 * GET request for showing search form.
@@ -85,16 +67,51 @@ public class SearchProjectsController {
 	@RequestMapping(method = RequestMethod.GET)
 	protected String showSearchForm(Model model) {
 		try {
-			logger.debug("Going to serve GET request for search form");
+			logger.info("Going to serve GET request for search form");
 			
 			/* Adding default search */
 			if (!model.containsAttribute(ModelKeys.PROJECT_QUERY)) {
 				model.addAttribute(ModelKeys.PROJECT_QUERY, ProjectQuery.defaultCriteria());
 			}
 			
-			logger.debug("View name: " + ViewNames.SEARCH);
+			logger.info("View name: " + ViewNames.SEARCH);
 			return ViewNames.SEARCH;
 		} catch (Exception e) {
+			logger.debug("Unexpected error when processing show search form request");
+			throw new BusinessOperationException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * GET request that was redirected from EDIT page.
+	 */
+	@RequestMapping(value = Urls.SEARCH_BACK, method = RequestMethod.GET)
+	protected String showSearchFormAfterEdit(Model model,
+			final RedirectAttributes redirectAttributes,
+			@ModelAttribute(ModelKeys.IS_SUCCESS) boolean isSuccess,
+			@ModelAttribute(ModelKeys.PROJECT_QUERY) ProjectQuery projectQuery) {
+		try {
+			logger.info("Serve GET request redirected from EDIT page");
+			
+			if (isSuccess) {
+				logger.info("Edit has successfully updated Project");
+			} else {
+				logger.info("Edit has unsuccessfully updated Project");
+			}
+			
+			List<Project> projects = queryProjects(projectQuery);
+	    	
+	    	/* Update Project query for the paging information */
+	    	projectQuery.setTotal(projectService.countProjectMatch(projectQuery));
+	    	model.addAttribute(ModelKeys.PROJECT_QUERY, projectQuery);
+			
+	        /* Redirect to normal search handler method */
+	        redirectAttributes.addFlashAttribute(ModelKeys.PROJECTS, projects);
+	        redirectAttributes.addFlashAttribute(ModelKeys.IS_SUCCESS, isSuccess);
+	        
+			logger.info("Redirect to: " + Urls.REDIRECT_PREFIX + Urls.SEARCH);
+			return Urls.REDIRECT_PREFIX + Urls.SEARCH;
+		} catch (ServiceOperationException e) {
 			logger.debug("Unexpected error when processing show search form request");
 			throw new BusinessOperationException(e.getMessage());
 		}
@@ -112,20 +129,16 @@ public class SearchProjectsController {
     		RedirectAttributes flashAttributes) {
     	
 		try {
-			logger.debug("Going to serve POST request when submitting search");
+			logger.info("Going to serve POST request when submitting search");
 			
 			/* Criteria need to be validated and retained in session */
 	    	if (queryBindingResult.hasErrors()) {
 	    		logger.debug("Binding errors for query binding: " + projectQuery);
-	    		logger.debug("View name: " + ViewNames.SEARCH);
+	    		logger.info("View name: " + ViewNames.SEARCH);
 	    		return ViewNames.SEARCH;
 	    	}
 	    	
-	    	/* Actual querying projects */
-	    	logger.debug("Query Projects with: " + projectQuery);
-	    	List<Project> projects = projectService.searchProject(projectQuery, 
-	    			projectQuery.getStart(), projectQuery.getMax());
-	    	logger.debug("Totally retrieved projects: " + projects.size());
+	    	List<Project> projects = queryProjects(projectQuery);
 	    	
 	    	/* Update Project query for the paging information */
 	    	projectQuery.setTotal(projectService.countProjectMatch(projectQuery));
@@ -135,8 +148,8 @@ public class SearchProjectsController {
 	    	flashAttributes.addFlashAttribute(ModelKeys.NOT_FOUND, projects.size() == 0);
 	        flashAttributes.addFlashAttribute(ModelKeys.PROJECTS, projects);
 	
-	        logger.debug("Goto: " + Urls.REDIRECT_PREFIX + ViewNames.SEARCH);
-	        return Urls.REDIRECT_PREFIX + ViewNames.SEARCH;
+	        logger.info("Goto: " + Urls.REDIRECT_PREFIX + ViewNames.SEARCH);
+	        return Urls.REDIRECT_PREFIX + Urls.SEARCH;
 		} catch (ServiceOperationException e) {
 			logger.debug("Error when attempting to consult the Service: " + e.getMessage());
 			throw new BusinessOperationException(e.getMessage());
@@ -145,4 +158,17 @@ public class SearchProjectsController {
 			throw new BusinessOperationException(e.getMessage());
 		}
     }
+	
+	// ============================================================================================
+	// PRIVATE HELPERs
+	// ============================================================================================
+	
+	private List<Project> queryProjects(ProjectQuery projectQuery) throws ServiceOperationException {
+		/* Actual querying projects */
+    	logger.debug("Query Projects with: " + projectQuery);
+    	List<Project> projects = projectService.searchProject(projectQuery, 
+    			projectQuery.getStart(), projectQuery.getMax());
+    	logger.debug("Totally retrieved projects: " + projects.size());
+    	return projects;
+	}
 }

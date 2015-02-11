@@ -24,33 +24,7 @@
 		<div class="errors-panel">
 			<spring:hasBindErrors name="project">
 				<c:forEach items="${errors.allErrors}" var="error">
-					<c:if test="${error.code eq 'ProjectNumberNull'}">
-						<c:set var="errorMessage" value="<spring:message code='error.projectnumbernull'/>" />
-					</c:if>
-					<c:if test="${error.code eq 'ProjectNumberNegative'}">
-						<c:set var="errorMessage" value="<spring:message code='error.projectnumbernegative'/>" />
-					</c:if>
-					<c:if test="${error.code eq 'ProjectNameBlank'}">
-						<c:set var="errorMessage" value="<spring:message code='error.projectnameblank'/>" />
-					</c:if>
-					<c:if test="${error.code eq 'ProjectNameLengthExceed'}">
-						<c:set var="errorMessage" value="<spring:message code='error.projectnamelengthexceed'/>" />
-					</c:if>
-					<c:if test="${error.code eq 'ProjectCustomerBlank'}">
-						<c:set var="errorMessage" value="<spring:message code='error.projectcustomerblank'/>" />
-					</c:if>
-					<c:if test="${error.code eq 'ProjectCustomerLengthExceed'}">
-						<c:set var="errorMessage" value="<spring:message code='error.projectcustomerlengthexceed'/>" />
-					</c:if>
-					<c:if test="${error.code eq 'ProjectStatusNull'}">
-						<c:set var="errorMessage" value="<spring:message code='error.projectstatusnull'/>" />
-					</c:if>
-					<c:if test="${error.code eq 'ProjectStartDateNull'}">
-						<c:set var="errorMessage" value="<spring:message code='error.projectstartdatenull'/>" />
-					</c:if>
-					<c:if test="${error.code eq 'ProjectEndDateLessThanStartDate'}">
-						<c:set var="errorMessage" value="<spring:message code='error.projectenddatelessthanstartdate'/>" />
-					</c:if>
+					<spring:message code="${error.code}" var="errorMessage" />
 					<div class="alert alert-dismissible alert-danger">
 						<button type="button" class="close" data-dismiss="alert">×</button>
 						<strong><c:out value="${errorMessage}" /></strong>
