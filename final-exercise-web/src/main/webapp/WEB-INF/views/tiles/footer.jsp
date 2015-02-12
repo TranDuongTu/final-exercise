@@ -9,15 +9,29 @@
 	
 	<script type="text/javascript">
 		function onChangeLocale(lang) {
-			var newURL = "";
-			var questionMarkLocation = document.URL.indexOf("?");
-			if (questionMarkLocation != -1) {
-				newURL = document.URL.substring(0, questionMarkLocation);
-			} else {
-				newURL = document.URL;
+			var newURL = document.URL;
+			
+			var questionMarkLocation = newURL.indexOf("?");
+			if (questionMarkLocation == -1) {
+				newURL = newURL + "?";
 			}
 	
-			newURL = newURL + "?locale=" + lang;
+			var localeIndex = newURL.indexOf("locale");
+			var nextAmp = newURL.indexOf("&", localeIndex + 1);
+			if (localeIndex != -1) {
+				if (nextAmp != -1) {
+					newURL = newURL.replace(newURL.substring(localeIndex, nextAmp), "");
+				} else {
+					newURL = newURL.replace(newURL.substring(localeIndex, newURL.length), "");
+				}
+			}
+			
+			if (newURL.lastIndexOf("&") == -1) {
+				newURL = newURL + "&locale=" + lang;
+			} else {
+				newURL = newURL + "locale=" + lang;
+			}
+			
 	
 			document.location = newURL;
 		}

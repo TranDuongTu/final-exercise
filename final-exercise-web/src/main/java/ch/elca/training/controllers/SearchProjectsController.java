@@ -265,6 +265,7 @@ public class SearchProjectsController extends BaseController {
 		projectQueryValidator.validate(projectQuery, errors);
 		
 		if (!errors.hasErrors()) {
+			logger.debug("Re-query projects on locale changed");
 			List<Project> projects = requeryAndUpdateProjectQuery(projectQuery, model);
 			model.addAttribute(ModelKeys.PROJECTS, projects);
 		}

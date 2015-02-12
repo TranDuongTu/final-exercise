@@ -104,10 +104,10 @@
 					<span class="glyphicon glyphicon-search" aria-hidden="true"></span> 
 					<b><spring:message code="button.searchpage.search" /></b>
 				</button>
-				<button type="reset" class="btn btn-default">
+				<a class="btn btn-default" href="javascript:onReset()">
 					<b><spring:message code="button.searchpage.reset" /></b> 
 					<span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
-				</button>
+				</a>
 			</div>
 		</div>
 	
@@ -216,32 +216,39 @@
 	
 	<!-- JS -->
 	<script type="text/javascript">
+		function onReset() {
+			$("#inputNumber").val("");
+			$("#inputName").val("");
+			$("#inputStatus").val("");
+			$("#inputCustomer").val("");
+		}
+	
 		function toFirst() {
-			document.getElementById('startField').value = 0;
+			$('#startField').val(0);
 		}
 		
 		function toLast() {
-			var total = parseInt(document.getElementById('totalField').value);
-			var max = parseInt(document.getElementById('maxField').value);
-			document.getElementById('startField').value = total - (total % max);
+			var total = parseInt($("#totalField").val());
+			var max = parseInt($("#maxField").val());
+			$("#startField").val(total - (total % max));
 		}
 		
 		function previous() {
-			var currentStart = parseInt(document.getElementById('startField').value);
-			var max = parseInt(document.getElementById('maxField').value);
+			var currentStart = parseInt($("#startField").val());
+			var max = parseInt($("#maxField").val());
 			if (currentStart - max >= 0) {
-				document.getElementById('startField').value = currentStart - max;
+				$("#startField").val(currentStart - max);
 			} else if (currentStart > 0) {
-				document.getElementById('startField').value = 0;
+				$("#startField").val(0);
 			}
 		}
 		
 		function next() {
-			var total = parseInt(document.getElementById('totalField').value);
-			var max = parseInt(document.getElementById('maxField').value);
-			var currentStart = parseInt(document.getElementById('startField').value);
+			var total = parseInt($("#totalField").val());
+			var max = parseInt($("#maxField").val());
+			var currentStart = parseInt($("#startField").val());
 			if (currentStart + max < total) {
-				document.getElementById('startField').value = currentStart + max;
+				$("#startField").val(currentStart + max);
 			}
 		}
 	</script>
