@@ -1,7 +1,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <div class="text-center">
-	<div>© ELCA Informatique SA</div>
+	<div><spring:message code="label.footer.company" /></div>
 	<div class="btn-group btn-group-xs" role="group">
 		<a href="javascript:onChangeLocale('en')" class="btn btn-default"><spring:message code="languages.english" /></a>
 		<a href="javascript:onChangeLocale('vn')" class="btn btn-default"><spring:message code="languages.vietnamese" /></a>

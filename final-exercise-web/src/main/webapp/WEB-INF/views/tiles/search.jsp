@@ -21,12 +21,12 @@
 				<c:choose>
 					<c:when test="${isSuccess}">
 						<div class="alert alert-success text-center">
-							<strong>Successfully update Project</strong>
+							<strong><spring:message code="label.searchpage.success.edit" /></strong>
 						</div>
 					</c:when>
 					<c:otherwise>
 						<div class="alert alert-warning text-center">
-							<strong>Unsuccessfully update Project</strong>
+							<strong><spring:message code="label.searchpage.unsuccess.edit" /></strong>
 						</div>
 					</c:otherwise>
 				</c:choose>
@@ -52,9 +52,10 @@
 				<label for="inputNumber" class="col-md-4 control-label"> 
 					<spring:message code="label.searchpage.number" />
 				</label>
+				<spring:message code="placeholder.searchpage.number" var="proNumber" />
 				<div class="col-md-8">
 					<form:input path="projectNumber" cssClass="form-control"
-						id="inputNumber" type="number" placeholder="Project number" />
+						id="inputNumber" type="number" placeholder="${proNumber}" />
 				</div>
 			</div>
 
@@ -63,9 +64,10 @@
 				<label for="inputName" class="col-md-4 control-label"> 
 					<spring:message code="label.searchpage.name" />
 				</label>
+				<spring:message code="placeholder.searchpage.name" var="proName" />
 				<div class="col-md-8">
 					<form:input path="projectName" cssClass="form-control"
-						id="inputName" placeholder="Project name" />
+						id="inputName" placeholder="${proName}" />
 				</div>
 			</div>
 		</div>
@@ -76,9 +78,10 @@
 				<label for="inputCustomer" class="col-md-4 control-label"> <spring:message
 						code="label.searchpage.customer" />
 				</label>
+				<spring:message code="placeholder.searchpage.customer" var="proCustomer" />
 				<div class="col-md-8">
 					<form:input path="customer" cssClass="form-control"
-						id="inputCustomer" placeholder="Customer" />
+						id="inputCustomer" placeholder="${proCustomer}" />
 				</div>
 			</div>
 
@@ -90,7 +93,9 @@
 				<div class="col-md-8">
 					<form:select path="projectStatus" cssClass="form-control"
 						id="inputStatus">
-						<form:option value="" selected="selected">Please choose</form:option>
+						<form:option value="" selected="selected">
+							<spring:message code="placeholder.searchpage.status" />
+						</form:option>
 						<form:options />
 					</form:select>
 				</div>

@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Project Information Management</title>
+<title><spring:message code="title" /></title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 

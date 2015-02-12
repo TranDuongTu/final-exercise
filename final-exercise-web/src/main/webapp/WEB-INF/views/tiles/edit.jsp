@@ -12,10 +12,10 @@
 		<legend>
 			<c:choose>
 				<c:when test="${project.id > 0}">
-					<b>Edit Project</b>
+					<b><spring:message code="title.editpage.edit" /></b>
 				</c:when>
 				<c:otherwise>
-					<b>New Project</b>
+					<b><spring:message code="title.editpage.new" /></b>
 				</c:otherwise>
 			</c:choose>
 		</legend>
@@ -38,6 +38,7 @@
 		
 		<!-- Project number -->
 		<div class="form-group">
+			<spring:message code="placeholder.editpage.number" var="proNumber" />
 			<label for="inputNumber" class="col-md-2 control-label">
 				<spring:message code="label.editpage.number" />
 			</label>
@@ -46,11 +47,11 @@
 					<c:when test="${project.id > 0}">
 						<form:hidden path="number" id="pnumber" />
 						<form:input path="number" cssClass="form-control" id="inputNumber"
-							type="number" placeholder="Project number" disabled="true" />
+							type="number" placeholder="${proNumber}" disabled="true" />
 					</c:when>
 					<c:otherwise>
 						<form:input path="number" cssClass="form-control" id="inputNumber"
-							type="number" placeholder="Project number" />
+							type="number" placeholder="${proNumber}" />
 					</c:otherwise>
 				</c:choose>
 			</div>
@@ -58,23 +59,25 @@
 
 		<!-- Input name -->
 		<div class="form-group">
+			<spring:message code="placeholder.editpage.name" var="proName" />
 			<label for="inputName" class="col-md-2 control-label">
 				<spring:message code="label.editpage.name" />
 			</label>
 			<div class="col-md-10">
 				<form:input path="name" cssClass="form-control" id="inputName"
-					placeholder="Project name" />
+					placeholder="${proName}" />
 			</div>
 		</div>
 
 		<!-- Input customer -->
 		<div class="form-group">
+			<spring:message code="placeholder.editpage.customer" var="proCustomer" />
 			<label for="inputCustomer" class="col-md-2 control-label">
 				<spring:message code="label.editpage.customer" />
 			</label>
 			<div class="col-md-10">
 				<form:input path="customer" cssClass="form-control"
-					id="inputCustomer" placeholder="Customer" />
+					id="inputCustomer" placeholder="${proCustomer}" />
 			</div>
 		</div>
 
@@ -100,7 +103,7 @@
 			</label>
 			<div class="col-md-10">
 				<form:input path="startDate" cssClass="form-control"
-					id="inputStartDate" placeholder="Start Date" readonly="true" />
+					id="inputStartDate" readonly="true" />
 			</div>
 		</div>
 
@@ -111,7 +114,7 @@
 			</label>
 			<div class="col-md-10">
 				<form:input path="endDate" cssClass="form-control" id="inputEndDate"
-					placeholder="End Date" readonly="true" />
+					readonly="true" />
 			</div>
 		</div>
 
@@ -119,10 +122,12 @@
 		<div class="form-group text-center">
 			<div class="btn-group">
 				<button type="submit" class="btn btn-danger">
+					<span class="glyphicon glyphicon-save" aria-hidden="true"></span>
 					<b><spring:message code="button.editpage.save" /></b>
 				</button>
 				<a href="javascript:onCancel()" class="btn btn-default">
-					<b><spring:message code="button.editpage.cancel" /></b>
+					<b><spring:message code="button.editpage.cancel" /></b> 
+					<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
 				</a>
 			</div>
 		</div>
