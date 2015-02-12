@@ -5,7 +5,7 @@ import java.beans.PropertyEditorSupport;
 import ch.elca.training.dom.Status;
 
 /**
- * {@link CustomEditor} for {Status}.
+ * {@link CustomEditor} for {@link Status}.
  * 
  * @author DTR
  */

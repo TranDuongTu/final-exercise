@@ -38,14 +38,12 @@
 				<div class="content-panel"><tiles:insertAttribute name="content" /></div>
 			</div>
 		</div>
-	</div>
-
-	<!-- JavaScripts - bootstrap -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		
-	<!-- JavaScripts - jQuery -->
-	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
-  	<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+		<div id="footer">
+      		<div class="container">
+        		<tiles:insertAttribute name="footer" />
+      		</div>
+    	</div>
+	</div>
 </body>
 </html>

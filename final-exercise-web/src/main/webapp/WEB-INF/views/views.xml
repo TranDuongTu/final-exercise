@@ -2,16 +2,19 @@
 "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
 "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
 <tiles-definitions>
-	<!-- Content Page -->
+	<!-- Template -->
 	<definition name="template" template="/WEB-INF/views/tiles/template.jsp">
 		<put-attribute name="header" value="/WEB-INF/views/tiles/header.jsp" />
 		<put-attribute name="menu" value="/WEB-INF/views/tiles/menu.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/tiles/footer.jsp" />
 	</definition>
 
+	<!-- Search page -->
 	<definition name="search" extends="template">
 		<put-attribute name="content" value="/WEB-INF/views/tiles/search.jsp" />
 	</definition>
 	
+	<!-- Edit page -->
 	<definition name="edit" extends="template">
 		<put-attribute name="content" value="/WEB-INF/views/tiles/edit.jsp" />
 	</definition>
