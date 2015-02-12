@@ -23,14 +23,12 @@ import ch.elca.training.constants.Urls;
 import ch.elca.training.constants.ViewNames;
 import ch.elca.training.dom.Project;
 import ch.elca.training.exceptions.BusinessOperationException;
-import ch.elca.training.services.ProjectService;
 import ch.elca.training.services.exceptions.ServiceOperationException;
 import ch.elca.training.services.exceptions.ServiceProjectNotExistsException;
-import ch.elca.training.services.searching.ProjectQuery;
 import ch.elca.training.validators.ProjectValidator;
 
 /**
- * Handle Edit project request.
+ * Handle Edit (or New) project requests.
  * 
  * @author DTR
  */
@@ -40,14 +38,11 @@ import ch.elca.training.validators.ProjectValidator;
 public class EditProjectController extends BaseController {
 	
 	@Autowired
-	private ProjectService projectService;
-	
-	@Autowired
 	private ProjectValidator projectValidator;
 	
-	/**
-	 * Request parameters.
-	 */
+	/*****************
+	 * URL parameters.
+	 *****************/
 	
 	/* Project number to be edited */
 	private static final String PNUM_PARAM = "pnumber";
@@ -55,97 +50,108 @@ public class EditProjectController extends BaseController {
 	/* For canceling the edit page. */
 	private static final String CANCEL_PARAM = "_cancel";
 	
-	/**
+	/******************************
 	 * Binding for {@link Project}.
-	 */
+	 ******************************/
 	@InitBinder(ModelKeys.PROJECT)
 	public void projectBinding(WebDataBinder binder, Locale locale) {
 		binder.setValidator(projectValidator);
 	}
 	
-	/**
-	 * Edit form for user to input modified informations.
-	 */
+	/*******************************************************************************
+	 * Showing EDIT form for user to modified Project.
+	 *******************************************************************************/
 	@RequestMapping(method = RequestMethod.GET)
-    protected String showEditProjectForm(
+    protected String showEditProjectForm(Model model,
     		@RequestParam(value = CANCEL_PARAM, required = false) String isCancel,
-    		@RequestParam(PNUM_PARAM) int pNumber,
-    		final RedirectAttributes flashAttributes,
-    		@ModelAttribute(ModelKeys.PROJECT_QUERY) ProjectQuery query,
-    		Model model) {
+    		@RequestParam(PNUM_PARAM) int pNumber) {
     	
     	try {
     		logger.info("Going to serve GET request on EDIT page");
     		
-    		/* User click cancel */
-    		if (isCancel != null) {
-    			logger.debug("User cancel editing project");
-        		logger.info("Redirect to: " + Urls.SEARCH);
-        		return Urls.REDIRECT_PREFIX + Urls.SEARCH;
-        	}
+    		if (isCancel != null) return cancelEditAndReturn();
     		
-    		/* Query Project based on its number */
-    		Project project;
-    		try {
-    			logger.debug("Query details of the Project with number: " + pNumber);
-    			project = projectService.getProjectByNumber(pNumber);
-    			logger.debug("Project found");
-    		} catch (ServiceProjectNotExistsException e) {
-    			logger.debug("Cannot retrieve Project");
-    			project = new Project();
-    			project.setStartDate(new Date());
-    			project.setEndDate(new Date());
-    		}
+    		Project project = getProjectToBeEdit(pNumber);
     		model.addAttribute(ModelKeys.PROJECT, project);
-            
-    		logger.info("Return view name: " + ViewNames.EDIT);
-    		model.addAttribute(ModelKeys.PAGE, "edit");
-            return ViewNames.EDIT;
+
+            return showPage(ViewNames.EDIT, model);
     	} catch (ServiceOperationException e) {
     		logger.debug("Unexpected thing occurred: " + e.getMessage());
     		throw new BusinessOperationException(e.getMessage());
     	}
     }
     
-	/**
+	/*******************************************************************************
 	 * Submit modified (or new) {@link Project}.
-	 */
+	 *******************************************************************************/
     @RequestMapping(method = RequestMethod.POST)
-    protected String onSubmitProject(
-    		@ModelAttribute(ModelKeys.PROJECT_QUERY) ProjectQuery projectQuery,
+    protected String onSubmitProject(Model model,
     		@ModelAttribute(ModelKeys.PROJECT) @Valid Project project,
     		BindingResult projectBindingResult, 
-    		final RedirectAttributes flashAttributes,
-    		Model model) {
+    		final RedirectAttributes redirectAttributes) {
     	
 		try {
 			logger.info("Trying to serve POST request on EDIT page");
 			
 			if (projectBindingResult.hasErrors()) {
-				logger.debug("Biding error for Project: " + project);
-				logger.info("Returning View: " + ViewNames.EDIT);
-				
-				model.addAttribute(ModelKeys.PAGE, "edit");
-	    		return ViewNames.EDIT;
-	    	}
-			
-			/* Persist and check if it success or not */
-			try {
-				logger.debug("Persist modified Project: " + project);
-				projectService.saveOrUpdateProject(project);
-				
-				logger.debug("Add success info for search page to display");
-				flashAttributes.addFlashAttribute(ModelKeys.IS_SUCCESS, true);
-			} catch (ServiceProjectNotExistsException e) {
-				logger.debug("Add failure info to search page to show");
-				flashAttributes.addFlashAttribute(ModelKeys.IS_SUCCESS, false);
+				return returnForBindingErrors(ViewNames.EDIT, project, projectBindingResult, model);
 			}
 			
-			logger.info("Redirect to: " + Urls.SEARCH + Urls.SEARCH_BACK);
-			return Urls.REDIRECT_PREFIX + Urls.SEARCH + Urls.SEARCH_BACK;
+			return updateProjectAndRedirect(redirectAttributes, project);
 		} catch (ServiceOperationException e) {
 			logger.debug("Some thing unexpected: " + e.getMessage());
 			throw new BusinessOperationException(e.getMessage());
 		}
+    }
+    
+    // ============================================================================================
+    // PRIVATE HELPERS
+    // ============================================================================================
+    
+    /**
+     * When user cancel editing.
+     */
+    private String cancelEditAndReturn() {
+    	logger.debug("User cancel editing project");
+		logger.info("Redirect to: " + Urls.SEARCH);
+		return Urls.REDIRECT_PREFIX + Urls.SEARCH;
+    }
+    
+    /**
+     * Query Project to be modified.
+     */
+    private Project getProjectToBeEdit(int pNumber) throws ServiceOperationException {
+		Project project;
+		try {
+			logger.debug("Query details of the Project with number: " + pNumber);
+			project = projectService.getProjectByNumber(pNumber);
+			logger.debug("Project found. Entering Edit Project page");
+		} catch (ServiceProjectNotExistsException e) {
+			logger.debug("project not found. Entering New Project page");
+			project = new Project();
+			project.setStartDate(new Date());
+			project.setEndDate(new Date());
+		}
+		return project;
+    }
+    
+    /**
+     * Update Project and redirect.
+     */
+    private String updateProjectAndRedirect(RedirectAttributes redirectAttributes, Project project) 
+    		throws ServiceOperationException {
+		try {
+			logger.debug("Persist modified Project: " + project);
+			projectService.saveOrUpdateProject(project);
+			
+			logger.debug("Successful! Add success info for search page to display");
+			redirectAttributes.addFlashAttribute(ModelKeys.IS_SUCCESS, true);
+		} catch (ServiceProjectNotExistsException e) {
+			logger.debug("Unsuccessful! Add failure info to search page to show");
+			redirectAttributes.addFlashAttribute(ModelKeys.IS_SUCCESS, false);
+		}
+		
+		logger.info("Redirect to: " + Urls.SEARCH + Urls.SEARCH_BACK);
+		return Urls.REDIRECT_PREFIX + Urls.SEARCH + Urls.SEARCH_BACK;
     }
 }

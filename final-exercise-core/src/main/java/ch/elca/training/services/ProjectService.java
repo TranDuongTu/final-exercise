@@ -34,13 +34,13 @@ public interface ProjectService {
 	/**
 	 * Search projects based on given criteria.
 	 */
-	List<Project> searchProject(ProjectQuery criteria, int start, int max) 
+	List<Project> searchProject(ProjectQuery criteria) 
 			throws ServiceInvalidInputException, ServiceOperationException;
 	
 	/**
-	 * Count number of Projects that match given criteria.
+	 * Count number of Projects that match given criteria (exclude paging search).
 	 */
-	int countProjectMatch(ProjectQuery projectQuery) throws ServiceOperationException;
+	int countProjectMatchExcludePaging(ProjectQuery projectQuery) throws ServiceOperationException;
 	
 	/**
 	 * Update the modified project.

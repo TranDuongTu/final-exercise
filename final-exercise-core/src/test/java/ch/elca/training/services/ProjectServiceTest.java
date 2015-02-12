@@ -55,8 +55,7 @@ public class ProjectServiceTest {
 		ProjectQuery criteria = createCriteria(
 				"", experimentedProject.getNumber(), "", null);
 		
-		int count = projectService.countProjects();
-		List<Project> result = projectService.searchProject(criteria, 0, count);
+		List<Project> result = projectService.searchProject(criteria);
 		Assert.assertEquals(1, result.size());
 		Assert.assertEquals(experimentedProject.getNumber(), result.get(0).getNumber());
 	}
@@ -70,10 +69,8 @@ public class ProjectServiceTest {
 		
 		projectService.saveOrUpdateProject(testProject);
 		
-		int count = projectService.countProjects();
 		List<Project> result = projectService.searchProject(
-				createCriteria("", testProject.getNumber(), "", null),
-				0, count);
+				createCriteria("", testProject.getNumber(), "", null));
 		
 		Assert.assertEquals(1, result.size());
 		Assert.assertEquals(testProject.getNumber(), result.get(0).getNumber());

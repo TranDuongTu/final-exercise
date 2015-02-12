@@ -132,4 +132,19 @@ public class Project extends BaseDom {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public String toString() {
+		return String.format("{id: %d, "
+				+ "number: %d, "
+				+ "name: %s, "
+				+ "customer: %s, "
+				+ "status: %s, "
+				+ "endDate: %s, "
+				+ "startDate: %s}", 
+				id, number, name, customer, 
+				status, endDate, startDate);
+	};
 }

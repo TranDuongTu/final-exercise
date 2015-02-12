@@ -10,6 +10,8 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.http.HttpStatus;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -21,6 +23,7 @@ import ch.elca.training.constants.ViewNames;
 import ch.elca.training.dom.Status;
 import ch.elca.training.exceptions.BusinessOperationException;
 import ch.elca.training.propertyeditors.StatusEditor;
+import ch.elca.training.services.ProjectService;
 
 /**
  * Based controller for PIM application.
@@ -35,6 +38,12 @@ public abstract class BaseController implements MessageSourceAware {
 	protected Logger logger = Logger.getLogger(getClass());
 	
 	@Autowired
+	protected ProjectService projectService;
+	
+	/**
+	 * Message source for supporting I18N.
+	 */
+	@Autowired
 	protected MessageSource messageSource;
 
 	@Override
@@ -43,7 +52,7 @@ public abstract class BaseController implements MessageSourceAware {
 	}
 	
 	/**
-	 * General {@link InitBinder} for common types.
+	 * General Binding for common types.
 	 */
 	 @InitBinder
 	 public void generalBinding(WebDataBinder binder, Locale locale) {
@@ -59,19 +68,58 @@ public abstract class BaseController implements MessageSourceAware {
 	 }
 	
 	/**
-	 * Handle all business level errors.
+	 * Handler for all business level errors.
 	 */
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler({BusinessOperationException.class})
-	public ModelAndView businessOperationsFailed(Exception e) {
-		logger.debug("Handle error in Handler Method: " + e.getMessage());
+	public ModelAndView businessOperationsFailed(BusinessOperationException e) {
+		logger.debug("Handle error: " + e.getMessage());
 		
 		ModelAndView mav = new ModelAndView();
-		mav.addObject(ModelKeys.ERROR_MESSAGE, e.getMessage());
+		mav.addObject(ModelKeys.EXCEPTION, e);
 		
 		logger.debug("Goto error page: " + ViewNames.ERROR);
 		mav.setViewName(ViewNames.ERROR);
 		
 		return mav;
+	}
+	
+	// ==================================================================================
+	// PROTECTED HELPERS
+	// ==================================================================================
+	
+	/**
+	 * Indicate view to show.
+	 */
+	protected String showPage(String viewName, Model model) {
+		logger.info("Resolve view: " + viewName);
+		
+		if (viewName == ViewNames.SEARCH) {
+			model.addAttribute(ModelKeys.PAGE, "search");
+		} else if (viewName == ViewNames.EDIT) {
+			model.addAttribute(ModelKeys.PAGE, "edit");
+		} else {
+			throw new IllegalArgumentException("Not currently supported page");
+		}
+		
+		return viewName;
+	}
+	
+	/**
+	 * Return view name that should be rendered if errors present (null if not).
+	 */
+	protected String returnForBindingErrors(String viewName, Object commandObject, 
+			BindingResult queryBindingResult, Model model) {
+		logger.debug("Binding errors for query binding: " + commandObject);
+		logger.info("Resolve for view name: " + viewName);
+		
+		if (viewName == ViewNames.SEARCH) {
+			model.addAttribute(ModelKeys.PAGE, "search");
+		} else if (viewName == ViewNames.EDIT) {
+			model.addAttribute(ModelKeys.PAGE, "edit");
+		} else {
+			throw new IllegalArgumentException("Currently not supported page");
+		}
+		return viewName;
 	}
 }

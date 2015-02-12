@@ -21,8 +21,7 @@ public enum ErrorCode {
 	QueryCustomerNull("error.searchpage.querycustomernull"),
 	QueryCustomerLengthExceed("error.searchpage.querycustomerlengthexceed"),
 	QueryNoCriteriaSet("error.searchpage.querynocriteriaset"),
-	QueryPagingIndicesInvalid("error.searchpage.querypagingindicesinvalid"),
-	QueryDeletesInvalid("error.searchpage.querydeletesinvalid");
+	QueryPagingIndicesInvalid("error.searchpage.querypagingindicesinvalid");
 	
 	private String code;
 	

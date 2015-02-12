@@ -73,7 +73,7 @@ public class ProjectServiceImpl implements ProjectService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Project> searchProject(ProjectQuery criteria, int start, int max) 
+	public List<Project> searchProject(ProjectQuery criteria) 
 			throws ServiceInvalidInputException, ServiceOperationException {
 		logger.debug("Validating criteria: " + criteria);
 		validateSearchCriteria(criteria);
@@ -103,7 +103,8 @@ public class ProjectServiceImpl implements ProjectService {
 					criteria.getProjectName(), 
 					criteria.getCustomer(), 
 					criteria.getProjectStatus(), 
-					start, max);
+					criteria.getStart(), 
+					criteria.getMax());
 		} catch (DaoOperationException e) {
 			logger.debug("Some thing occurred in DAO: " + e.getMessage());
 			throw new ServiceOperationException(e.getMessage());
@@ -116,7 +117,7 @@ public class ProjectServiceImpl implements ProjectService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public int countProjectMatch(ProjectQuery criteria)
+	public int countProjectMatchExcludePaging(ProjectQuery criteria)
 			throws ServiceOperationException {
 		logger.debug("Validating criteria: " + criteria);
 		validateSearchCriteria(criteria);

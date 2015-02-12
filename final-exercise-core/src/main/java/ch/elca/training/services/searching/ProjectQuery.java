@@ -1,7 +1,10 @@
 package ch.elca.training.services.searching;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -31,7 +34,7 @@ public class ProjectQuery implements MessageSourceAware {
 	public static final String DEFAULT_CUSTOMER = "";
 	public static final int DEFAULT_START_INDEX = 0;
 	public static final int DEFAULT_TOTAL = 0;
-	public static final int DEFAULT_MAX_ITEMS = 20;
+	public static final int DEFAULT_MAX_ITEMS = 10;
 	
 	/**
 	 * {@link MessageSource} to obtain max page items.
@@ -166,7 +169,22 @@ public class ProjectQuery implements MessageSourceAware {
 	 */
 	@Override
 	public String toString() {
-		return String.format("{name: %s, number: %s, status: %s, customer: %s; total: %d; start: %d; max: %d}",
-				projectName, projectNumber, projectStatus, customer, total, start, max);
+		List<Integer> requestedDeleteIds = new ArrayList<Integer>();
+		for (Entry<Integer, Boolean> entry : deletes.entrySet()) {
+			if (entry.getValue()) {
+				requestedDeleteIds.add(entry.getKey());
+			}
+		}
+		
+		return String.format("{name: %s, "
+				+ "number: %s, "
+				+ "status: %s, "
+				+ "customer: %s, "
+				+ "total: %d, "
+				+ "start index: %d, "
+				+ "max items: %d, "
+				+ "delete ids: %s}",
+				projectName, projectNumber, projectStatus, 
+				customer, total, start, max, requestedDeleteIds);
 	}
 }

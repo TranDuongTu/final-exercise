@@ -22,11 +22,6 @@ public final class ModelKeys {
 	public static final String PROJECTS = "projects";
 	
 	/**
-	 * Attribute that present when search return 0 Projects match.
-	 */
-	public static final String NOT_FOUND = "notFound";
-	
-	/**
 	 * Is update success?
 	 */
 	public static final String IS_SUCCESS = "isSuccess";
@@ -47,7 +42,7 @@ public final class ModelKeys {
 	/**
 	 * Error Message to be showed on error page.
 	 */
-	public static final String ERROR_MESSAGE = "errorMessage";
+	public static final String EXCEPTION = "exception";
 	
 	// ========================================================================
 	// SESSION
