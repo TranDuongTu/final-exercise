@@ -1,54 +1,101 @@
 package ch.elca.training.services.searching;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import ch.elca.training.dom.Status;
 
 /**
- * Supported criteria for searching projects.
+ * Supported criteria for searching projects. It also contain numbers of
+ * projects should be deleted.
  * 
  * @author DTR
  */
-public class ProjectQuery {
+@Component("defaultProjectQuery")
+@Scope("singleton")
+public class ProjectQuery implements MessageSourceAware {
+	
+	public static final String MAX_ITEMS_KEY = "configs.searchpage.pagemax";
 	
 	/**
-	 * Factory instance for getting default search criteria.
+	 * Default values.
 	 */
-	private static ProjectQuery instance;
+	public static final Integer DEFAULT_NUMBER = null;
+	public static final String DEFAULT_NAME = "";
+	public static final Status DEFAULT_STATUS = null;
+	public static final String DEFAULT_CUSTOMER = "";
+	public static final int DEFAULT_START_INDEX = 0;
+	public static final int DEFAULT_TOTAL = 0;
+	public static final int DEFAULT_MAX_ITEMS = 20;
 	
-	public static ProjectQuery defaultCriteria() {
-		if (instance == null) {
-			instance = new ProjectQuery();
-			instance.setCustomer("");
-			instance.setProjectName("");
-			instance.setProjectStatus(null);
-			instance.setMax(10);
-		}
+	/**
+	 * {@link MessageSource} to obtain max page items.
+	 */
+	
+	public void setMessageSource(MessageSource messageSource) {
 		
-		return instance;
 	}
 	
+	// ========================================================================
+	// INFORMATIONS CARRIED
+	// ========================================================================
+	
 	/**
-	 * Object instance variables.
+	 * Search by Project number.
 	 */
 	public static final String PROPERTY_NUMBER = "projectNumber";
-	private Integer projectNumber;
+	private Integer projectNumber = DEFAULT_NUMBER;
 	
+	/**
+	 * Search by project name.
+	 */
 	public static final String PROPERTY_NAME = "projectName";
-	private String projectName;
+	private String projectName = DEFAULT_NAME;
 	
+	/**
+	 * Search by customer.
+	 */
 	public static final String PROPERTY_CUSTOMER = "customer";
-	private String customer;
+	private String customer = DEFAULT_CUSTOMER;
 	
+	/**
+	 * Search by status.
+	 */
 	public static final String PROPERTY_STATUS = "status";
-	private Status projectStatus;
+	private Status projectStatus = DEFAULT_STATUS;
 	
+	/**
+	 * Total number of matched projects.
+	 */
 	public static final String PROPERTY_TOTAL = "total";
-	private int total;
+	private int total = DEFAULT_TOTAL;
 	
+	/**
+	 * Start index of matched projects that should be showed.
+	 */
 	public static final String PROPERTY_START = "start";
-	private int start;
+	private int start = DEFAULT_START_INDEX;
 	
+	/**
+	 * Maximum number of projects on a page.
+	 */
 	public static final String PROPERTY_MAX = "max";
-	private int max;
+	private int max = DEFAULT_MAX_ITEMS;
+	
+	/**
+	 * Project IDs that has been marked as delete.
+	 */
+	public static final String PROPERTY_DELETES = "deletes";
+	private Map<Integer, Boolean> deletes = new HashMap<Integer, Boolean>();
+	
+	// ========================================================================
+	// GETTERs AND SETTERs
+	// ========================================================================
 	
 	public Integer getProjectNumber() {
 		return projectNumber;
@@ -104,6 +151,14 @@ public class ProjectQuery {
 
 	public void setTotal(int total) {
 		this.total = total;
+	}
+
+	public Map<Integer, Boolean> getDeletes() {
+		return deletes;
+	}
+
+	public void setDeletes(Map<Integer, Boolean> deletes) {
+		this.deletes = deletes;
 	}
 
 	/**

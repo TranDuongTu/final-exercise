@@ -14,6 +14,7 @@ public interface Urls {
     
     public static final String SEARCH = "/search";
     public static final String SEARCH_BACK = "/back";
+    public static final String SEARCH_DELETE = "/delete";
     
     public static final String EDIT = "/edit";
 }

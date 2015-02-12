@@ -31,6 +31,7 @@ public class ProjectQueryValidator implements Validator {
 		validateAtLeastOneCriteria(queryToBeValidated, errors);
 		
 		validatePagingIndices(queryToBeValidated, errors);
+		validateDeletes(queryToBeValidated, errors);
 	}
 	
 	/**
@@ -88,6 +89,15 @@ public class ProjectQueryValidator implements Validator {
 	private void validatePagingIndices(ProjectQuery query, Errors errors) {
 		if (query.getMax() <= 0) {
 			errors.reject(ErrorCode.QueryPagingIndicesInvalid.getCode());
+		}
+	}
+	
+	/**
+	 * Delete IDs.
+	 */
+	private void validateDeletes(ProjectQuery query, Errors errors) {
+		if (query.getDeletes().size() != query.getTotal()) {
+			errors.reject(ErrorCode.QueryDeletesInvalid.getCode());
 		}
 	}
 }

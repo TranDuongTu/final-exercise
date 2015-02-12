@@ -184,6 +184,23 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void deleteProjectNumber(int number) throws ServiceOperationException {
+		try {
+			Project project = projectDao.getProjectByNumber(number);
+			logger.debug("Attempt to delete Project; " + project);
+			projectDao.delete(project);
+		} catch (DaoOperationException e) {
+			logger.debug("Some thing bad in DAO " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
+		} catch (Exception e) {
+			logger.debug("Some thing unexpected: " + e.getMessage());
+			throw new ServiceOperationException(e.getMessage());
+		}
+	}
+	
 	// ==================================================================================
 	// PRIVATE HELPERs
 	// ==================================================================================

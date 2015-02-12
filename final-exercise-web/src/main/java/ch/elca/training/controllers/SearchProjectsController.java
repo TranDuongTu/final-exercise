@@ -1,10 +1,12 @@
 package ch.elca.training.controllers;
 
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,6 +42,10 @@ public class SearchProjectsController extends BaseController {
 	private ProjectService projectService;
 	
 	@Autowired
+	@Qualifier("defaultProjectQuery")
+	private ProjectQuery defaultProjectQuery;
+	
+	@Autowired
 	private ProjectQueryValidator projectQueryValidator;
 	
 	/**
@@ -60,7 +66,7 @@ public class SearchProjectsController extends BaseController {
 			
 			/* Adding default search */
 			if (!model.containsAttribute(ModelKeys.PROJECT_QUERY)) {
-				model.addAttribute(ModelKeys.PROJECT_QUERY, ProjectQuery.defaultCriteria());
+				model.addAttribute(ModelKeys.PROJECT_QUERY, defaultProjectQuery);
 			}
 			
 			logger.info("View name: " + ViewNames.SEARCH);
@@ -134,6 +140,10 @@ public class SearchProjectsController extends BaseController {
 	    	
 	    	/* Update Project query for the paging information */
 	    	projectQuery.setTotal(projectService.countProjectMatch(projectQuery));
+	    	projectQuery.getDeletes().clear();
+	    	for (Project project : projects) {
+	    		projectQuery.getDeletes().put(project.getNumber(), false);
+	    	}
 	    	model.addAttribute(ModelKeys.PROJECT_QUERY, projectQuery);
 	
 	        /* Flash attributes for redirecting context */
@@ -149,6 +159,52 @@ public class SearchProjectsController extends BaseController {
 			logger.debug("Unexpected error when processing search form submit: " + e.getMessage());
 			throw new BusinessOperationException(e.getMessage());
 		}
+    }
+	
+	/**
+	 * Handle delete operation.
+	 */
+	@RequestMapping(value = Urls.SEARCH_DELETE, method = RequestMethod.POST)
+    protected String submitSearchDelete(
+    		@ModelAttribute(ModelKeys.PROJECT_QUERY) @Valid ProjectQuery projectQuery, 
+    		BindingResult queryBindingResult,
+    		Model model,
+    		RedirectAttributes flashAttributes) {
+    	try {
+    		logger.debug("Going to serve POST request that want to delete projects");
+    		
+    		/* Criteria need to be validated and retained in session */
+	    	if (queryBindingResult.hasErrors()) {
+	    		logger.debug("Binding errors for query binding: " + projectQuery);
+	    		logger.info("View name: " + ViewNames.SEARCH);
+	    		
+	    		model.addAttribute(ModelKeys.PAGE, "search");
+	    		return ViewNames.SEARCH;
+	    	}
+	    
+	    	for (Entry<Integer, Boolean> entry : projectQuery.getDeletes().entrySet()) {
+	    		if (projectQuery.getDeletes().get(entry.getKey())) {
+	    			projectService.deleteProjectNumber(entry.getKey());
+	    		}
+	    	}
+	    	
+	    	/* Re-query */
+	    	int total = projectService.countProjectMatch(projectQuery);
+	    	if (projectQuery.getStart() <= total) {
+	    		projectQuery.setStart(projectQuery.getStart() - projectQuery.getMax());
+	    	}
+	    	List<Project> projects = projectService.searchProject(
+	    			projectQuery, projectQuery.getStart(), projectQuery.getMax());
+	    	flashAttributes.addFlashAttribute(ModelKeys.PROJECTS, projects);
+    		
+    		return Urls.REDIRECT_PREFIX + Urls.SEARCH;
+    	} catch (BusinessOperationException e) {
+    		logger.debug("Error when attempting to consult the Service: " + e.getMessage());
+			throw new BusinessOperationException(e.getMessage());
+    	} catch (Exception e) {
+    		logger.debug("Unexpected error when processing search form submit: " + e.getMessage());
+			throw new BusinessOperationException(e.getMessage());
+    	}
     }
 	
 	// ============================================================================================

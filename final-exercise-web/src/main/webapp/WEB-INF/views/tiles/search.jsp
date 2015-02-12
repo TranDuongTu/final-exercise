@@ -125,7 +125,7 @@
 				
 				<!-- Top pager and delete button -->
 				<div>
-					<button type="submit" class="btn btn-default btn-sm col-md-2">
+					<button type="submit" formaction="${pageContext.request.contextPath}/search/delete" class="btn btn-default btn-sm col-md-2">
 						<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
 					</button>
 					
@@ -169,7 +169,7 @@
 							
 							<!-- Row data -->
 							<tr>
-								<td><input type="checkbox" /></td>
+								<td><form:checkbox path="deletes[${project.number}]" /></td>
 								<td><a href="${pageContext.request.contextPath}/edit?pnumber=${project.number}">
 									<c:out value="${project.number}" />
 								</a></td>
@@ -207,35 +207,35 @@
 		<form:hidden id="totalField" path="total" />
 		<form:hidden id="startField" path="start" />
 		<form:hidden id="maxField" path="max" />
-		
-		<!-- JS -->
-		<script type="text/javascript">
-			function toFirst() {
-				document.getElementById('startField').value = 0;
-			}
-			
-			function toLast() {
-				var total = parseInt(document.getElementById('totalField').value);
-				var max = parseInt(document.getElementById('maxField').value);
-				document.getElementById('startField').value = total - (total % max);
-			}
-			
-			function previous() {
-				var currentStart = parseInt(document.getElementById('startField').value);
-				var max = parseInt(document.getElementById('maxField').value);
-				if (currentStart - max >= 0) {
-					document.getElementById('startField').value = currentStart - max;
-				}
-			}
-			
-			function next() {
-				var total = parseInt(document.getElementById('totalField').value);
-				var max = parseInt(document.getElementById('maxField').value);
-				var currentStart = parseInt(document.getElementById('startField').value);
-				if (currentStart + max < total) {
-					document.getElementById('startField').value = currentStart + max;
-				}
-			}
-		</script>
 	</form:form>
+	
+	<!-- JS -->
+	<script type="text/javascript">
+		function toFirst() {
+			document.getElementById('startField').value = 0;
+		}
+		
+		function toLast() {
+			var total = parseInt(document.getElementById('totalField').value);
+			var max = parseInt(document.getElementById('maxField').value);
+			document.getElementById('startField').value = total - (total % max);
+		}
+		
+		function previous() {
+			var currentStart = parseInt(document.getElementById('startField').value);
+			var max = parseInt(document.getElementById('maxField').value);
+			if (currentStart - max >= 0) {
+				document.getElementById('startField').value = currentStart - max;
+			}
+		}
+		
+		function next() {
+			var total = parseInt(document.getElementById('totalField').value);
+			var max = parseInt(document.getElementById('maxField').value);
+			var currentStart = parseInt(document.getElementById('startField').value);
+			if (currentStart + max < total) {
+				document.getElementById('startField').value = currentStart + max;
+			}
+		}
+	</script>
 </div>

@@ -52,4 +52,9 @@ public interface ProjectService {
 	 * Delete projects
 	 */
 	void deleteProject(Project project) throws ServiceOperationException;
+	
+	/**
+	 * Delete projects with Number.
+	 */
+	void deleteProjectNumber(int number) throws ServiceOperationException;
 }
