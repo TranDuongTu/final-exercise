@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.elca.training.dao.ProjectDao;
 import ch.elca.training.dom.Project;
+import ch.elca.training.services.exceptions.ServiceDuplicateProjectException;
 import ch.elca.training.services.exceptions.ServiceInvalidInputException;
 import ch.elca.training.services.exceptions.ServiceOperationException;
 import ch.elca.training.services.exceptions.ServiceProjectNotExistsException;
@@ -63,7 +64,8 @@ public interface ProjectService {
 	/**
 	 * Update the given Project.
 	 */
-	void saveOrUpdateProject(Project project) throws ServiceOperationException;
+	void saveOrUpdateProject(Project project) throws ServiceInvalidInputException, 
+			ServiceDuplicateProjectException, ServiceOperationException;
 
 	/**
 	 * Delete the given Project.

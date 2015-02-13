@@ -12,6 +12,7 @@ import ch.elca.training.dao.exceptions.DaoObjectNotFoundException;
 import ch.elca.training.dao.exceptions.DaoOperationException;
 import ch.elca.training.dom.Project;
 import ch.elca.training.services.ProjectService;
+import ch.elca.training.services.exceptions.ServiceDuplicateProjectException;
 import ch.elca.training.services.exceptions.ServiceInvalidInputException;
 import ch.elca.training.services.exceptions.ServiceOperationException;
 import ch.elca.training.services.exceptions.ServiceProjectNotExistsException;
@@ -83,11 +84,10 @@ public class ProjectServiceImpl implements ProjectService {
 	 */
 	public List<Project> searchProject(ProjectQuery projectQuery) 
 			throws ServiceInvalidInputException, ServiceOperationException {
+		logger.debug("Attempt to find Projects with criteria: " + projectQuery);
+		validateSearchCriteria(projectQuery);
 		
 		try {
-			logger.debug("Attempt to find Projects with criteria: " + projectQuery);
-			validateSearchCriteria(projectQuery);
-			
 			Integer projectNumber = projectQuery.getProjectNumber();
 			if (projectNumber != null) {
 				return findProjectWithNumber(projectNumber);
@@ -135,13 +135,18 @@ public class ProjectServiceImpl implements ProjectService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void saveOrUpdateProject(Project project) 
-			throws ServiceInvalidInputException, ServiceOperationException {
+	public void saveOrUpdateProject(Project project) throws ServiceInvalidInputException, 
+			ServiceDuplicateProjectException, ServiceOperationException {
+		
 		try {
 			logger.debug("Attempt to save or update Project: " + project);
 			validateProject(project);
 			
+			checkProjectDuplication(project);
+			
 			projectDao.saveOrUpdate(project);
+		} catch (ServiceDuplicateProjectException e) {
+			throw e;
 		} catch (DaoOperationException e) {
 			String message = "Error in DAO when saving or updating Project";
 			logger.debug(message + ": " + e);
@@ -319,6 +324,23 @@ public class ProjectServiceImpl implements ProjectService {
 		} catch (DaoObjectNotFoundException e) {
 			logger.debug("Number not exist: " + projectNumber);
 			return false;
+		}
+	}
+	
+	/**
+	 * Check duplicated Project.
+	 */
+	private void checkProjectDuplication(Project project) 
+			throws ServiceDuplicateProjectException, DaoOperationException {
+		if (project.getId() == 0) {
+			try {
+				projectDao.getProjectByNumber(project.getNumber());
+				String message = "Project number " + project.getNumber() + " existed";
+				logger.debug(message);
+				throw new ServiceDuplicateProjectException(message);
+			} catch (DaoObjectNotFoundException e) {
+				// Ready to insert
+			}
 		}
 	}
 }

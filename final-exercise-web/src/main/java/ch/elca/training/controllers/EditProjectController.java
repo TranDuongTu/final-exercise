@@ -103,11 +103,7 @@ public class EditProjectController extends BaseController {
 			}
 			
 			return updateProjectAndRedirect(redirectAttributes, project);
-		} catch (ServiceOperationException e) {
-    		String message = "Error when trying to update Project in Edit page";
-    		logger.debug(message + ": " + e);
-    		throw new BusinessOperationException(message, e);
-    	} catch (Exception e) {
+		} catch (Exception e) {
     		String message = "Unexpected error when submitting edit page";
     		logger.debug(message + ": " + e);
     		throw new BusinessOperationException(message, e);
@@ -148,20 +144,21 @@ public class EditProjectController extends BaseController {
     /**
      * Update Project and redirect.
      */
-    private String updateProjectAndRedirect(RedirectAttributes redirectAttributes, Project project) 
-    		throws ServiceOperationException {
+    private String updateProjectAndRedirect(RedirectAttributes redirectAttributes, Project project) {
 		try {
 			logger.debug("Persist modified Project: " + project);
 			projectService.saveOrUpdateProject(project);
 			
 			logger.debug("Successful! Add success info for search page to display");
 			redirectAttributes.addFlashAttribute(ModelKeys.IS_SUCCESS, true);
-		} catch (ServiceProjectNotExistsException e) {
+		} catch (ServiceOperationException e) {
 			logger.debug("Unsuccessful! Add failure info to search page to show");
 			redirectAttributes.addFlashAttribute(ModelKeys.IS_SUCCESS, false);
+			redirectAttributes.addFlashAttribute(ModelKeys.FAIL_REASON, e.getMessage());
 		}
 		
-		logger.info("Redirect to: " + Urls.SEARCH + Urls.SEARCH_BACK);
-		return Urls.REDIRECT_PREFIX + Urls.SEARCH + Urls.SEARCH_BACK;
+		String redirectUrl = Urls.SEARCH + Urls.SEARCH_BACK;
+		logger.info("Redirect to: " + redirectUrl);
+		return Urls.REDIRECT_PREFIX + redirectUrl;
     }
 }

@@ -26,7 +26,7 @@
 					</c:when>
 					<c:otherwise>
 						<div class="alert alert-warning text-center">
-							<strong><spring:message code="label.searchpage.unsuccess.edit" /></strong>
+							<strong><spring:message code="label.searchpage.unsuccess.edit" /> - ${reason}</strong>
 						</div>
 					</c:otherwise>
 				</c:choose>

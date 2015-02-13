@@ -25,6 +25,7 @@ public final class ModelKeys {
 	 * Is update success?
 	 */
 	public static final String IS_SUCCESS = "isSuccess";
+	public static final String FAIL_REASON = "reason";
 	
 	// ========================================================================
 	// EDIT PAGE
@@ -42,7 +43,7 @@ public final class ModelKeys {
 	/**
 	 * Error Message to be showed on error page.
 	 */
-	public static final String EXCEPTION = "exception";
+	public static final String ERROR_MESSAGE = "errorMessage";
 	
 	// ========================================================================
 	// SESSION

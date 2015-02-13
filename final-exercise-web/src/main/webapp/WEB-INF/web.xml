@@ -33,10 +33,6 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
-	<welcome-file-list>
-		<welcome-file>welcome.jsp</welcome-file>
-	</welcome-file-list>
-
 	<!-- Encoding filters -->
 	<filter>
 		<filter-name>encodingFilter</filter-name>

@@ -25,6 +25,7 @@ import ch.elca.training.constants.Urls;
 import ch.elca.training.constants.ViewNames;
 import ch.elca.training.dom.Project;
 import ch.elca.training.exceptions.BusinessOperationException;
+import ch.elca.training.services.exceptions.ServiceInvalidInputException;
 import ch.elca.training.services.exceptions.ServiceOperationException;
 import ch.elca.training.services.searching.ProjectQuery;
 import ch.elca.training.validators.ProjectQueryValidator;
@@ -35,7 +36,7 @@ import ch.elca.training.validators.ProjectQueryValidator;
  * @author DTR
  */
 @Controller
-@RequestMapping(Urls.SEARCH)
+@RequestMapping(value = {"/", Urls.SEARCH})
 @SessionAttributes(value = {ModelKeys.PROJECT_QUERY})
 public class SearchProjectsController extends BaseController {
 	
@@ -93,14 +94,19 @@ public class SearchProjectsController extends BaseController {
 	protected String handleRedirectFromEditPage(Model model,
 			final RedirectAttributes redirectAttributes,
 			@ModelAttribute(ModelKeys.IS_SUCCESS) boolean isSuccess,
+			@ModelAttribute(ModelKeys.FAIL_REASON) String reason,
 			@ModelAttribute(ModelKeys.PROJECT_QUERY) ProjectQuery projectQuery) {
 		try {
 			logger.info("Serve GET request redirected from EDIT page");
 			
-			addSuccessSignalFromEdit(redirectAttributes, isSuccess);
+			addSuccessSignalFromEdit(redirectAttributes, isSuccess, reason);
 			List<Project> projects = requeryAndUpdateProjectQuery(projectQuery, model);
 			
 	        return redirectProjectsFound(redirectAttributes, projects);
+		} catch (ServiceInvalidInputException e) {
+			/* This happens when user has never submitted query and trying to update Project */
+			logger.debug("Query invalid due to never been submitted");
+			return Urls.REDIRECT_PREFIX + Urls.SEARCH;
 		} catch (ServiceOperationException e) {
 			String message = "Error from Service layer when searching for projects";
 			logger.debug(message + ": " + e);
@@ -200,11 +206,13 @@ public class SearchProjectsController extends BaseController {
 	/**
 	 * Add update success information from EDIT page.
 	 */
-	private void addSuccessSignalFromEdit(RedirectAttributes redirectAttributes, boolean isSuccess) {
+	private void addSuccessSignalFromEdit(RedirectAttributes redirectAttributes, 
+			boolean isSuccess, String reason) {
 		if (isSuccess) {
 			logger.info("Edit has successfully updated Project");
 		} else {
 			logger.info("Edit has unsuccessfully updated Project");
+			redirectAttributes.addFlashAttribute(ModelKeys.FAIL_REASON, reason);
 		}
 		redirectAttributes.addFlashAttribute(ModelKeys.IS_SUCCESS, isSuccess);
 	}

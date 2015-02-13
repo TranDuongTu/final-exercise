@@ -21,7 +21,6 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.elca.training.constants.ModelKeys;
 import ch.elca.training.constants.ViewNames;
 import ch.elca.training.dom.Status;
-import ch.elca.training.exceptions.BusinessOperationException;
 import ch.elca.training.propertyeditors.StatusEditor;
 import ch.elca.training.services.ProjectService;
 
@@ -71,22 +70,28 @@ public abstract class BaseController implements MessageSourceAware {
 	 * Handler for all business level errors.
 	 */
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-	@ExceptionHandler({BusinessOperationException.class})
-	public ModelAndView businessOperationsFailed(BusinessOperationException e) {
-		logger.debug("Handle error: " + e.getMessage());
-		
+	@ExceptionHandler({Exception.class})
+	public ModelAndView businessOperationsFailed(Exception e) {
+		logger.debug("Handle error from our own server: " + e);
+		return handleBusinessError(e);
+	}
+	
+	// ==================================================================================
+	// PROTECTED HELPERS
+	// ==================================================================================
+	
+	/**
+	 * Handle general business error helper.
+	 */
+	private ModelAndView handleBusinessError(Exception e) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject(ModelKeys.EXCEPTION, e);
+		mav.addObject(ModelKeys.ERROR_MESSAGE, e.getMessage());
 		
 		logger.debug("Goto error page: " + ViewNames.ERROR);
 		mav.setViewName(ViewNames.ERROR);
 		
 		return mav;
 	}
-	
-	// ==================================================================================
-	// PROTECTED HELPERS
-	// ==================================================================================
 	
 	/**
 	 * Indicate view to show.

@@ -3,11 +3,13 @@ package ch.elca.training.validators;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.elca.training.dom.Project;
+import ch.elca.training.services.ProjectService;
 import ch.elca.training.validators.errorcode.ErrorCode;
 
 /**
@@ -17,6 +19,9 @@ import ch.elca.training.validators.errorcode.ErrorCode;
  */
 @Component
 public class ProjectValidator implements Validator {
+	
+	@Autowired
+	private ProjectService projectService;
 	
 	public boolean supports(Class<?> clazz) {
 		return Project.class.equals(clazz);

@@ -153,9 +153,22 @@
 		});
 	
 	    function onCancel() {
-	        var newURL = document.URL 
-	        	+ "&pnumber=" + $("#pnumber").val() 
+	    	var newURL = "";
+	    	if (document.URL.indexOf("?") == -1) {
+	    		newURL = document.URL + "?";
+	    	} else {
+	    		newURL = document.URL;
+	    	}
+	    	
+	    	var pnumber = $("#pnumber").val();
+	    	if (typeof pnumber == 'undefined') {
+	    		pnumber = 0;
+	    	}
+	    	
+	    	newURL = newURL
+	        	+ "&pnumber=" + pnumber
 	        	+ "&_cancel";
+	    	
 	        document.location=newURL;
 	    }
 	</script>
