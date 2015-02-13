@@ -21,7 +21,7 @@ import ch.elca.training.utils.ProjectFactory;
 @Transactional
 public class DaoTestBase extends AbstractTransactionalJUnit4SpringContextTests {
 	
-	public static final int NO_DUMMY_PROJECTS = 100;
+	public static final int NO_DUMMY_PROJECTS = 5;
 	
 	@Autowired
 	protected ProjectDao projectDao;
@@ -45,11 +45,11 @@ public class DaoTestBase extends AbstractTransactionalJUnit4SpringContextTests {
 	// PRIVATE HELPERs
 	// ==================================================================================
 	
-	protected long getUnDuplicateId() {
-		long max = Integer.MIN_VALUE;
+	protected int getUnDuplicateNumber() {
+		int max = Integer.MIN_VALUE;
 		for (Project project : dummyProjects) {
-			if (project.getId() > max) {
-				max = project.getId();
+			if (project.getNumber() > max) {
+				max = project.getNumber();
 			}
 		}
 		return max + 1;

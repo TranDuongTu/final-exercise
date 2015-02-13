@@ -33,6 +33,13 @@ public class ProjectServiceImpl implements ProjectService {
 	/**
 	 * {@inheritDoc}
 	 */
+	public ProjectDao getProjectDao() {
+		return projectDao;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public int countProjects() throws ServiceOperationException {
 		try {
 			logger.debug("Attempt to count total no. Projects");

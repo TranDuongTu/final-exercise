@@ -1,6 +1,5 @@
 package ch.elca.training.dao;
 
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import ch.elca.training.dom.Project;
 import ch.elca.training.dom.Status;
+import ch.elca.training.utils.ProjectComparator;
 import ch.elca.training.utils.ProjectFactory;
 
 /**
@@ -21,22 +21,6 @@ import ch.elca.training.utils.ProjectFactory;
  */
 @ContextConfiguration(locations = {"classpath*:**/*test.xml"})
 public class ProjectDaoTest extends DaoTestBase {
-	
-	/**
-	 * Comparator that uses Project number to compare.
-	 */
-	private static final Comparator<Project> PROJECT_COMPARATOR = 
-			new Comparator<Project>() {
-		public int compare(Project o1, Project o2) {
-			if (o1.getNumber() < o2.getNumber()) {
-				return -1;
-			} else if (o1.getNumber() == o2.getNumber()) {
-				return 0;
-			} else {
-				return 1;
-			}
-		};
-	};
 	
 	// ==================================================================================
 	// TEST BASIC FUNCTIONs
@@ -53,7 +37,7 @@ public class ProjectDaoTest extends DaoTestBase {
 		List<Project> projects = projectDao.getAll();
 		Assert.assertEquals(dummyProjects.size(), projects.size());
 		
-		Set<Project> preProjects = new TreeSet<Project>(PROJECT_COMPARATOR);
+		Set<Project> preProjects = new TreeSet<Project>(new ProjectComparator());
 		preProjects.addAll(dummyProjects);
 		
 		for (Project project : projects) {
@@ -94,7 +78,7 @@ public class ProjectDaoTest extends DaoTestBase {
 	public void getProjectsByNamePatternOnExperimentedProject() throws Exception {
 		Project experimentedProject = dummyProjects.get(0);
 		String name = experimentedProject.getName();
-		Set<Project> projects = new TreeSet<Project>(PROJECT_COMPARATOR);
+		Set<Project> projects = new TreeSet<Project>(new ProjectComparator());
 		
 		/* Pattern that match experimented project */
 		String inclusivePattern = "%" + name.substring(
@@ -113,7 +97,7 @@ public class ProjectDaoTest extends DaoTestBase {
 	public void getProjectsByCustomerPatternOnExperimentedProject() throws Exception {
 		Project experimentedProject = dummyProjects.get(0);
 		String customer = experimentedProject.getCustomer();
-		Set<Project> projects = new TreeSet<Project>(PROJECT_COMPARATOR);
+		Set<Project> projects = new TreeSet<Project>(new ProjectComparator());
 		
 		/* Pattern that match experimented project */
 		String inclusivePattern = "%" + customer.substring(
@@ -142,14 +126,15 @@ public class ProjectDaoTest extends DaoTestBase {
 	
 	@Test
 	public void saveOrUpdateShouldPersistAProject() throws Exception {
-		long id = getUnDuplicateId();
+		int number = getUnDuplicateNumber();
 		Project testProject = ProjectFactory.createProject(
-				id, (int) id, "Project Test", "Test Customer", 
-				ProjectFactory.randomizeStatus(), new Date(), new Date());
+				0, number, "Project Test", "Test Customer", 
+				ProjectFactory.randomizeStatus(), 
+				new Date(), new Date());
 		projectDao.saveOrUpdate(testProject);
 		
 		Assert.assertEquals(dummyProjects.size() + 1, projectDao.count());
-		Project project = projectDao.get(id);
+		Project project = projectDao.getProjectByNumber(number);
 		Assert.assertEquals(testProject.getNumber(), project.getNumber());
 		Assert.assertEquals(testProject.getName(), project.getName());
 		Assert.assertEquals(testProject.getStatus(), project.getStatus());

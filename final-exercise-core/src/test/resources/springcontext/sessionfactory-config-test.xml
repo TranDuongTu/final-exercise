@@ -14,6 +14,7 @@
 				<prop key="hibernate.format_sql">true</prop>
 				<prop key="hibernate.cache.provider_class">org.hibernate.cache.HashtableCacheProvider</prop>
 				<prop key="hibernate.max_fetch_depth">3</prop>
+				<prop key="hibernate.hbn2ddl.auto">create-drop</prop>
 			</props>
 		</property>
 

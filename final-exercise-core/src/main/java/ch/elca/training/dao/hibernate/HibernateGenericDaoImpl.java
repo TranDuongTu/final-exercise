@@ -101,9 +101,8 @@ public abstract class HibernateGenericDaoImpl<T extends BaseDom> implements Gene
 			logger.debug(message);
 			throw new DaoObjectNotFoundException(message);
 		} catch (DaoObjectNotFoundException e) {
-			String message = "Project not found with id " + id + ": " + e;
-			logger.debug(message);
-			throw new DaoOperationException(message);
+			logger.debug(e.getMessage());
+			throw e;
 		} catch (Exception e) {
 			String message = "Error when trying to get Object: " + e;
 			logger.debug(message);

@@ -2,8 +2,10 @@ package ch.elca.training.services;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.elca.training.dao.ProjectDao;
 import ch.elca.training.dom.Project;
 import ch.elca.training.services.exceptions.ServiceInvalidInputException;
 import ch.elca.training.services.exceptions.ServiceOperationException;
@@ -19,6 +21,12 @@ import ch.elca.training.services.searching.ProjectQuery;
 public interface ProjectService {
 
 	public static final String BEAN_NAME = "projectService";
+	
+	/**
+	 * Get ProjectDao.
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	ProjectDao getProjectDao();
 
 	/**
 	 * Count total of {@link Project} currently in database.

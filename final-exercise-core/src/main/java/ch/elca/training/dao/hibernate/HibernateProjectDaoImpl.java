@@ -39,9 +39,8 @@ public class HibernateProjectDaoImpl
 		try {
 			return getByNumber(number);
 		} catch (DaoObjectNotFoundException e) {
-			String message = "Project not found with number " + number + ": " + e;
-			logger.debug(message);
-			throw new DaoObjectNotFoundException(message);
+			logger.debug(e.getMessage());
+			throw e;
 		} catch (Exception e) {
 			String message = "Unexpected error when getting Project: " + e;
 			logger.debug(message);

@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.elca.training.dom.Project;
 import ch.elca.training.dom.Status;
@@ -26,7 +27,7 @@ import ch.elca.training.utils.ProjectFactory;
 @ContextConfiguration(locations = {"classpath*:**/*test.xml"})
 public class ProjectServiceTest {
 	
-	public static final int NO_DUMMY_PROJECTS = 100;
+	public static final int NO_DUMMY_PROJECTS = 5;
 	
 	@Autowired
 	private ProjectService projectService;
@@ -34,21 +35,23 @@ public class ProjectServiceTest {
 	private List<Project> dummyProjects;
 	
 	@Before
+	@Transactional
 	public void initTestData() throws Exception {
+		projectService.getProjectDao().deleteAll();
 		dummyProjects = ProjectFactory.getRandomProjects(NO_DUMMY_PROJECTS);
 		for (Project project : dummyProjects) {
-			projectService.saveOrUpdateProject(project);
+			projectService.getProjectDao().saveOrUpdate(project);
 		}
 	}
 
 	@After
+	@Transactional
 	public void clearTestData() throws Exception {
-		for (Project project : dummyProjects) {
-			projectService.deleteProject(project);
-		}
+		projectService.getProjectDao().deleteAll();
 	}
 	
 	@Test
+	@Transactional
 	public void shouldReturnExactProjectWithNumber() throws Exception {
 		Project experimentedProject = dummyProjects.get(0);
 		
@@ -61,6 +64,7 @@ public class ProjectServiceTest {
 	}
 	
 	@Test
+	@Transactional
 	public void shouldInsertNewProject() throws Exception {
 		long id = getUnDuplicateId();
 		Project testProject = ProjectFactory.createProject(
