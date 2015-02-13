@@ -12,4 +12,8 @@ public class ServiceInvalidInputException extends ServiceOperationException {
 	public ServiceInvalidInputException(String mess) {
 		super(mess);
 	}
+	
+	public ServiceInvalidInputException(String mess, Exception causeException) {
+		super(mess, causeException);
+	}
 }

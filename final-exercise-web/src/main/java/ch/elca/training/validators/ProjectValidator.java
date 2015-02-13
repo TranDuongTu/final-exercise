@@ -46,11 +46,10 @@ public class ProjectValidator implements Validator {
 	/**
 	 * Project name.
 	 */
-	public static final int MAX_NAME_LENGTH = 100;
 	private void validateName(Project project, Errors errors) {
 		if (StringUtils.isBlank(project.getName())) {
 			errors.rejectValue(Project.PROPERTY_NAME, ErrorCode.ProjectNameBlank.getCode());
-		} else if (project.getName().length() > MAX_NAME_LENGTH) {
+		} else if (project.getName().length() > Project.CONSTRAINT_NAME_LENGTH) {
 			errors.rejectValue(Project.PROPERTY_NAME, ErrorCode.ProjectNameLengthExceed.getCode());
 		}
 	}
@@ -58,11 +57,10 @@ public class ProjectValidator implements Validator {
 	/**
 	 * Project customer.
 	 */
-	private static final int MAX_CUSTOMER_LENGTH = 500;
 	private void validateCustomer(Project project, Errors errors) {
 		if (!StringUtils.isNotBlank(project.getCustomer())) {
 			errors.rejectValue(Project.PROPERTY_CUSTOMER, ErrorCode.ProjectCustomerBlank.getCode());
-		} else if (project.getCustomer().length() > MAX_CUSTOMER_LENGTH) {
+		} else if (project.getCustomer().length() > Project.CONSTRAINT_CUSTOMER_LENGTH) {
 			errors.rejectValue(Project.PROPERTY_CUSTOMER, ErrorCode.ProjectCustomerLengthExceed.getCode());
 		}
 	}
@@ -89,7 +87,7 @@ public class ProjectValidator implements Validator {
 			Date endDate = project.getEndDate();
 			
 			if (endDate.getTime() - startDate.getTime() < 0) {
-				errors.reject(ErrorCode.ProjectEndDateLessThanStartDate.getCode());
+				errors.reject(ErrorCode.ProjectEndBeforeStart.getCode());
 			}
 		}
 	}

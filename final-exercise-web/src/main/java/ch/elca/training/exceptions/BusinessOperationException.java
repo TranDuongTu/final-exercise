@@ -8,18 +8,18 @@ package ch.elca.training.exceptions;
 public class BusinessOperationException extends RuntimeException {
 	private static final long serialVersionUID = 3158522382181203844L;
 	
-	private String underLayerMessage;
+	private Exception causeException;
 
 	public BusinessOperationException(String mess) {
 		super(mess);
 	}
 	
-	public BusinessOperationException(String mess, String technicalMessage) {
+	public BusinessOperationException(String mess, Exception causeException) {
 		super(mess);
-		this.underLayerMessage = technicalMessage;
+		this.causeException = causeException;
 	}
 	
-	public String getUnderLayerlMessage() {
-		return this.underLayerMessage;
+	public Exception getCaException() {
+		return this.causeException;
 	}
 }

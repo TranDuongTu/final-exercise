@@ -81,8 +81,8 @@ public class SearchProjectsController extends BaseController {
 			return showPage(ViewNames.SEARCH, model);
 		} catch (Exception e) {
 			String message = "Error when showing search page";
-			logger.debug(message + ": " + e.getMessage());
-			throw new BusinessOperationException(message, e.getMessage());
+			logger.debug(message + ": " + e);
+			throw new BusinessOperationException(message, e);
 		}
 	}
 	
@@ -103,12 +103,12 @@ public class SearchProjectsController extends BaseController {
 	        return redirectProjectsFound(redirectAttributes, projects);
 		} catch (ServiceOperationException e) {
 			String message = "Error from Service layer when searching for projects";
-			logger.debug(message + ": " + e.getMessage());
-			throw new BusinessOperationException(message, e.getMessage());
+			logger.debug(message + ": " + e);
+			throw new BusinessOperationException(message, e);
 		} catch (Exception e) {
 			String message = "Unexpected error when processing redirect from EDIT page: ";
 			logger.debug(message + ": " + e.getMessage());
-			throw new BusinessOperationException(message, e.getMessage());
+			throw new BusinessOperationException(message, e);
 		}
 	}
 
@@ -134,11 +134,11 @@ public class SearchProjectsController extends BaseController {
 		} catch (ServiceOperationException e) {
 			String message = "Error from Service layer when searching projects";
 			logger.debug(message + ": " + e.getMessage());
-			throw new BusinessOperationException(message, e.getMessage());
+			throw new BusinessOperationException(message, e);
 		} catch (Exception e) {
 			String message = "Error when processing search form submit: ";
 			logger.debug(message + ": " + e.getMessage());
-			throw new BusinessOperationException(message, e.getMessage());
+			throw new BusinessOperationException(message, e);
 		}
     }
 	
@@ -165,11 +165,11 @@ public class SearchProjectsController extends BaseController {
     	} catch (BusinessOperationException e) {
     		String message = "Error from Service layer trying to delete and requery";
     		logger.debug(message + ": " + e.getMessage());
-			throw new BusinessOperationException(message, e.getMessage());
+			throw new BusinessOperationException(message, e);
     	} catch (Exception e) {
     		String message = "Error when processing delete operation submit";
     		logger.debug(message + ": " + e.getMessage());
-			throw new BusinessOperationException(message, e.getMessage());
+			throw new BusinessOperationException(message, e);
     	}
     }
 	

@@ -6,24 +6,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import ch.elca.training.dom.Status;
 
 /**
- * Supported criteria for searching projects. It also contain numbers of
- * projects should be deleted.
+ * Query object used to search for projects.
  * 
  * @author DTR
  */
 @Component("defaultProjectQuery")
 @Scope("singleton")
-public class ProjectQuery implements MessageSourceAware {
-	
-	public static final String MAX_ITEMS_KEY = "configs.searchpage.pagemax";
+public class ProjectQuery {
 	
 	/**
 	 * Default values.
@@ -35,14 +30,6 @@ public class ProjectQuery implements MessageSourceAware {
 	public static final int DEFAULT_START_INDEX = 0;
 	public static final int DEFAULT_TOTAL = 0;
 	public static final int DEFAULT_MAX_ITEMS = 10;
-	
-	/**
-	 * {@link MessageSource} to obtain max page items.
-	 */
-	
-	public void setMessageSource(MessageSource messageSource) {
-		
-	}
 	
 	// ========================================================================
 	// INFORMATIONS CARRIED

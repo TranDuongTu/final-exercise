@@ -14,7 +14,7 @@ public enum ErrorCode {
 	ProjectCustomerLengthExceed("error.editpage.projectcustomerexceed"),
 	ProjectStatusNull("error.editpage.projectstatusnull"),
 	ProjectStartDateNull("error.editpage.projectstartdatenull"),
-	ProjectEndDateLessThanStartDate("error.editpage.projectendlessstart"),
+	ProjectEndBeforeStart("error.editpage.projectendlessstart"),
 	QueryNumberNegative("error.searchpage.querynumbernegative"),
 	QueryNameNull("error.searchpage.querynamenull"),
 	QueryNameLengthExceed("error.searchpage.querynamelengthexceed"),

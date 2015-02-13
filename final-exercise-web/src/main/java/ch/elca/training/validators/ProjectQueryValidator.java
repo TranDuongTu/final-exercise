@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.elca.training.dom.Project;
 import ch.elca.training.services.searching.ProjectQuery;
 import ch.elca.training.validators.errorcode.ErrorCode;
 
@@ -45,13 +46,12 @@ public class ProjectQueryValidator implements Validator {
 	/**
 	 * Project Name search validation
 	 */
-	private static final int MAX_NAME_LENGTH = 100;
 	private void validateName(ProjectQuery query, Errors errors) {
 		if (query.getProjectName() == null) {
 			errors.rejectValue(ProjectQuery.PROPERTY_NAME, ErrorCode.QueryNameNull.getCode());
 		}
 		
-		if (query.getProjectName().length() > MAX_NAME_LENGTH) {
+		if (query.getProjectName().length() > Project.CONSTRAINT_NAME_LENGTH) {
 			errors.rejectValue(ProjectQuery.PROPERTY_NAME, ErrorCode.QueryNameLengthExceed.getCode());
 		}
 	}
@@ -59,13 +59,12 @@ public class ProjectQueryValidator implements Validator {
 	/**
 	 * Project customer search validation
 	 */
-	private static final int MAX_CUSTOMER_LENGTH = 500;
 	private void validateCustomer(ProjectQuery query, Errors errors) {
 		if (query.getCustomer() == null) {
 			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, ErrorCode.QueryCustomerNull.getCode());
 		}
 		
-		if (query.getCustomer().length() > MAX_CUSTOMER_LENGTH) {
+		if (query.getCustomer().length() > Project.CONSTRAINT_CUSTOMER_LENGTH) {
 			errors.rejectValue(ProjectQuery.PROPERTY_CUSTOMER, ErrorCode.QueryCustomerLengthExceed.getCode());
 		}
 	}
@@ -74,8 +73,8 @@ public class ProjectQueryValidator implements Validator {
 	 * At least one search criteria must be set.
 	 */
 	private void validateAtLeastOneCriteria(ProjectQuery query, Errors errors) {
-		if (!StringUtils.isNotBlank(query.getCustomer()) &&
-				!StringUtils.isNotBlank(query.getProjectName()) &&
+		if (StringUtils.isBlank(query.getCustomer()) &&
+				StringUtils.isBlank(query.getProjectName()) &&
 				query.getProjectStatus() == null &&
 				query.getProjectNumber() == null) {
 			errors.reject(ErrorCode.QueryNoCriteriaSet.getCode());

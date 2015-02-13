@@ -37,25 +37,15 @@ public class HibernateProjectDaoImpl
 			throws DaoObjectNotFoundException, DaoOperationException {
 		
 		try {
-			logger.debug("Attempt to get Project with number: " + number);
-			
-			Project result = (Project) getSessionFactory().getCurrentSession()
-					.createCriteria(getType()).add(criterionNumberMatch(number))
-					.uniqueResult();
-			
-			if (result == null) {
-				throw new DaoObjectNotFoundException(
-						String.format("No Project with number %d found", number));
-			}
-			
-			logger.debug("Retrieved Project: " + result.toString());
-			return result;
+			return getByNumber(number);
 		} catch (DaoObjectNotFoundException e) {
-			logger.debug("The return Project is null");
-			throw e;
+			String message = "Project not found with number " + number + ": " + e;
+			logger.debug(message);
+			throw new DaoObjectNotFoundException(message);
 		} catch (Exception e) {
-			logger.debug("Unexpected error occurred: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Unexpected error when getting Project: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -65,18 +55,20 @@ public class HibernateProjectDaoImpl
 	public List<Project> findProjectsWithNamePattern(String name) 
 			throws DaoOperationException {
 		try {
-			logger.debug("Attempt to find Project with name pattern: " + name);
+			logger.debug("Attempt to find Project with name: " + name);
 			
 			Criteria criteria = getSessionFactory().getCurrentSession()
-					.createCriteria(getType()).add(criterionNameMatch(name));
+					.createCriteria(getType())
+					.add(criterionNameMatch(name));
 			List<Project> result = findProjects(criteria);
 			
 			logger.debug("Query return " + result.size() + " projects");
 
 			return result;
 		} catch (Exception e) {
-			logger.debug("Unexpected error: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Unexpected error when finding with name: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -86,7 +78,7 @@ public class HibernateProjectDaoImpl
 	public List<Project> findProjectsWithCustomerPattern(String customer) 
 			throws DaoOperationException {
 		try {
-			logger.debug("Attempt to find Project with customer pattern: " + customer);
+			logger.debug("Attempt to find Project with customer: " + customer);
 			
 			Criteria criteria = getSessionFactory().getCurrentSession()
 					.createCriteria(getType())
@@ -97,8 +89,9 @@ public class HibernateProjectDaoImpl
 
 			return result;
 		} catch (Exception e) {
-			logger.debug("Unexpected error: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Unexpected error when finding with customer: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -111,15 +104,17 @@ public class HibernateProjectDaoImpl
 			logger.debug("Attempt to find Projects with Status: " + status);
 			
 			Criteria criteria = getSessionFactory().getCurrentSession()
-					.createCriteria(getType()).add(criterionStatusMatch(status));
+					.createCriteria(getType())
+					.add(criterionStatusMatch(status));
 			List<Project> result = findProjects(criteria);
 			
 			logger.debug("Criteria query return " + result.size() + " projects");
 
 			return result;
 		} catch (Exception e) {
-			logger.debug("Unexpected error: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Unexpected error when finding with status: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -130,8 +125,11 @@ public class HibernateProjectDaoImpl
 			String name, String customer, Status status) throws DaoOperationException {
 		
 		try {
-			logger.debug(String.format("Attempt to find Projects with name pattern: %s;"
-					+ "customer pattern: %s; Status: %s", name, customer, status));
+			logger.debug(String.format("Attempt to find Projects with "
+					+ "name: %s;"
+					+ "customer: %s; "
+					+ "Status: %s", 
+					name, customer, status));
 			
 			Criteria criteria = getSessionFactory().getCurrentSession()
 					.createCriteria(getType())
@@ -142,8 +140,9 @@ public class HibernateProjectDaoImpl
 			
 			return result;
 		} catch (Exception e) {
-			logger.debug("Unexpected error: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Unexpected error when finding with 3 patterns: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -155,9 +154,13 @@ public class HibernateProjectDaoImpl
 					throws DaoOperationException {
 		
 		try {
-			logger.debug(String.format("Attempt to find Projects with name pattern: %s;"
-					+ "customer pattern: %s; Status: %s. Start at: %d, length: %d", 
-						name, customer, status, start, length));
+			logger.debug(String.format("Attempt to find Projects with "
+					+ "name: %s;"
+					+ "customer: %s; "
+					+ "Status: %s. "
+					+ "Start at: %d, "
+					+ "length: %d", 
+					name, customer, status, start, length));
 			
 			Criteria criteria = getSessionFactory().getCurrentSession()
 					.createCriteria(getType())
@@ -171,8 +174,9 @@ public class HibernateProjectDaoImpl
 
 			return result;
 		} catch (Exception e) {
-			logger.debug("Unexpected error: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Unexpected error when finding with patterns and paging: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -182,8 +186,11 @@ public class HibernateProjectDaoImpl
 	public int countProjectsMatchPatterns(
 			String name, String customer, Status status) throws DaoOperationException {
 		try {
-			logger.debug(String.format("Attempt to count Projects with name pattern: %s;"
-					+ "customer pattern: %s; Status: %s", name, customer, status));
+			logger.debug(String.format("Attempt to count Projects with "
+					+ "name: %s;"
+					+ "customer: %s; "
+					+ "Status: %s", 
+					name, customer, status));
 			
 			int result = ((Long) getSessionFactory().getCurrentSession()
 					.createCriteria(getType())
@@ -195,8 +202,9 @@ public class HibernateProjectDaoImpl
 			
 			return result;
 		} catch (Exception e) {
-			logger.debug("Unexpected error: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Unexpected error when counting with patterns: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -204,6 +212,28 @@ public class HibernateProjectDaoImpl
 	// PRIVATE HELPERs
 	// ============================================================================================
 	
+	/**
+	 * Get Project with number.
+	 */
+	private Project getByNumber(int number) throws DaoObjectNotFoundException {
+		logger.debug("Attempt to get Project with number: " + number);
+		
+		Project result = (Project) getSessionFactory().getCurrentSession()
+				.createCriteria(getType()).add(criterionNumberMatch(number))
+				.uniqueResult();
+		
+		if (result == null) {
+			String message = "No Project with number " + number + " found";
+			throw new DaoObjectNotFoundException(message);
+		}
+		
+		logger.debug("Retrieved Project: " + result);
+		return result;
+	}
+	
+	/**
+	 * Criterion for finding with multiple patterns.
+	 */
 	private Criterion criterionForMultiplePatternsMatching(String name, String customer, Status status) {
 		Criterion nameMatch = criterionNameMatch(name);
 		Criterion customerMatch = criterionCustomerMatch(customer);
@@ -212,18 +242,30 @@ public class HibernateProjectDaoImpl
 		return Restrictions.and(nameMatch, Restrictions.and(customerMatch, statusMatch));
 	}
 	
+	/**
+	 * Criterion for finding with number pattern.
+	 */
 	private Criterion criterionNumberMatch(int number) {
 		return Restrictions.eq(Project.PROPERTY_NUMBER, number);
 	}
 	
+	/**
+	 * Criterion for finding with name pattern.
+	 */
 	private Criterion criterionNameMatch(String name) {
 		return Restrictions.like(Project.PROPERTY_NAME, "%" + name + "%");
 	}
 	
+	/**
+	 * Criterion for finding with customer pattern.
+	 */
 	private Criterion criterionCustomerMatch(String customer) {
 		return Restrictions.like(Project.PROPERTY_CUSTOMER, "%" + customer + "%");
 	}
 	
+	/**
+	 * Criterion for finding with status.
+	 */
 	private Criterion criterionStatusMatch(Status status) {
 		if (status != null) {
 			return Restrictions.eq(Project.PROPERTY_STATUS, status);
@@ -232,6 +274,9 @@ public class HibernateProjectDaoImpl
 		}
 	}
 	
+	/**
+	 * Finding matched objects and convert to list of projects.
+	 */
 	private List<Project> findProjects(Criteria criteria) {
 		List<?> rawList = criteria.list();
 		

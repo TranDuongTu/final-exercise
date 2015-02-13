@@ -69,7 +69,7 @@ public abstract class HibernateGenericDaoImpl<T extends BaseDom> implements Gene
 	 */
 	public int count() throws DaoOperationException {
 		try {
-			logger.debug("Start counting...");
+			logger.debug("Counting for " + type.getName());
 			int result = ((Long) sessionFactory.getCurrentSession()
 	                .createCriteria(type)
 	                .setProjection(Projections.rowCount())
@@ -77,8 +77,9 @@ public abstract class HibernateGenericDaoImpl<T extends BaseDom> implements Gene
 			logger.debug("End counting with result: " + result);
 			return result;
 		} catch (Exception e) {
-			logger.debug("Exception when counting: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Exception when counting: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -88,18 +89,25 @@ public abstract class HibernateGenericDaoImpl<T extends BaseDom> implements Gene
 	@SuppressWarnings("unchecked")
 	public T get(long id) throws DaoObjectNotFoundException, DaoOperationException {
 		try {
-			logger.debug("Get object with id = " + id);
+			logger.debug("Get object with id: " + id);
+			
 			T result = (T) sessionFactory.getCurrentSession().get(type, id);
 			if (result != null) {
-				logger.debug("Return object: " + result);
+				logger.debug("Object returned: " + result);
 				return result;
 			}
 			
-			logger.debug("Null object returned with id: " + id);
-			throw new DaoObjectNotFoundException("ID = " + id);
+			String message = "Null object returned for id: " + id;
+			logger.debug(message);
+			throw new DaoObjectNotFoundException(message);
+		} catch (DaoObjectNotFoundException e) {
+			String message = "Project not found with id " + id + ": " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		} catch (Exception e) {
-			logger.debug("Unexpected error occurred: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Error when trying to get Object: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -110,18 +118,21 @@ public abstract class HibernateGenericDaoImpl<T extends BaseDom> implements Gene
 	public List<T> getAll() throws DaoOperationException {
 		try {
 			logger.debug("Attempt to get all");
+			
 			List<?> rawList = sessionFactory.getCurrentSession()
 	                .createCriteria(type).list();
-			
 			logger.debug("Query by criteria return " + rawList.size() + " objects");
+			
 			List<T> result = new ArrayList<T>();
 			for (Object object : rawList) {
 				result.add((T) object);
 			}
+			
 			return result;
 		} catch (Exception e) {
-			logger.debug("Unexpected error occurred: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Unexpected error: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -130,12 +141,13 @@ public abstract class HibernateGenericDaoImpl<T extends BaseDom> implements Gene
 	 */
 	public void saveOrUpdate(T object) throws DaoOperationException {
 		try {
-			logger.debug("Try to save or update object: " + object.toString());
+			logger.debug("Try to save or update object: " + object);
 			sessionFactory.getCurrentSession().saveOrUpdate(object);
-			logger.debug("Successfully save or update object. New ID = " + object.getId());
+			logger.debug("Successfully save or update object. New ID: " + object.getId());
 		} catch (Exception e) {
-			logger.debug("Error when saving or updating: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Error when saving or updating: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -148,8 +160,9 @@ public abstract class HibernateGenericDaoImpl<T extends BaseDom> implements Gene
 			sessionFactory.getCurrentSession().delete(object);
 			logger.debug("Successfully delete object " + object.toString());
 		} catch (Exception e) {
-			logger.debug("Error when deleting: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Error when deleting: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 	
@@ -164,8 +177,9 @@ public abstract class HibernateGenericDaoImpl<T extends BaseDom> implements Gene
 				.executeUpdate();
 			logger.debug("Delete All completed");
 		} catch (Exception e) {
-			logger.debug("Error when deleting All: " + e.getMessage());
-			throw new DaoOperationException(e.getMessage());
+			String message = "Error when deleting All: " + e;
+			logger.debug(message);
+			throw new DaoOperationException(message);
 		}
 	}
 }

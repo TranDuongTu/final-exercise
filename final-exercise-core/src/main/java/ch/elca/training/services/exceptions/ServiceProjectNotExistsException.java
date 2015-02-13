@@ -1,7 +1,7 @@
 package ch.elca.training.services.exceptions;
 
 /**
- * Occurred when trying to delete not existed {@link Project}
+ * Occurred when attempting to get (or delete) non-existed project.
  * 
  * @author DTR
  */
@@ -10,5 +10,9 @@ public class ServiceProjectNotExistsException extends ServiceOperationException 
 
 	public ServiceProjectNotExistsException(String mess) {
 		super(mess);
+	}
+	
+	public ServiceProjectNotExistsException(String mess, Exception causeException) {
+		super(mess, causeException);
 	}
 }

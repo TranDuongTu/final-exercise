@@ -1,7 +1,7 @@
 package ch.elca.training.utils.structures;
 
 /**
- * Class to represent a pair of objects.
+ * Tuple (pair of objects) data structure.
  * 
  * @author DTR
  */

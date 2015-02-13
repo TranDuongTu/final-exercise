@@ -76,8 +76,13 @@ public class EditProjectController extends BaseController {
 
             return showPage(ViewNames.EDIT, model);
     	} catch (ServiceOperationException e) {
-    		logger.debug("Unexpected thing occurred: " + e.getMessage());
-    		throw new BusinessOperationException(e.getMessage());
+    		String message = "Error when trying to get Project in Edit page";
+    		logger.debug(message + ": " + e);
+    		throw new BusinessOperationException(message, e);
+    	} catch (Exception e) {
+    		String message = "Unexpected error when loading EDIT page";
+    		logger.debug(message + ": " + e);
+    		throw new BusinessOperationException(message, e);
     	}
     }
     
@@ -99,9 +104,14 @@ public class EditProjectController extends BaseController {
 			
 			return updateProjectAndRedirect(redirectAttributes, project);
 		} catch (ServiceOperationException e) {
-			logger.debug("Some thing unexpected: " + e.getMessage());
-			throw new BusinessOperationException(e.getMessage());
-		}
+    		String message = "Error when trying to update Project in Edit page";
+    		logger.debug(message + ": " + e);
+    		throw new BusinessOperationException(message, e);
+    	} catch (Exception e) {
+    		String message = "Unexpected error when submitting edit page";
+    		logger.debug(message + ": " + e);
+    		throw new BusinessOperationException(message, e);
+    	}
     }
     
     // ============================================================================================

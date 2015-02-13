@@ -17,44 +17,61 @@ import ch.elca.training.services.searching.ProjectQuery;
  */
 @Transactional(rollbackFor = ServiceOperationException.class)
 public interface ProjectService {
-	
+
 	public static final String BEAN_NAME = "projectService";
-	
+
 	/**
-	 * Count {@link Project}.
+	 * Count total of {@link Project} currently in database.
 	 */
 	int countProjects() throws ServiceOperationException;
-	
+
 	/**
 	 * Get {@link Project} by Number.
+	 * 
+	 * @throws ServiceProjectNotExistsException
+	 *             if cannot find one
+	 * @return Project found (never return null or uninitialized Project).
 	 */
-	Project getProjectByNumber(int number) 
+	Project getProjectByNumber(int number)
 			throws ServiceProjectNotExistsException, ServiceOperationException;
-	
+
 	/**
 	 * Search projects based on given criteria.
+	 * 
+	 * @throws ServiceInvalidInputException
+	 *             if the given query object is invalid
+	 * @return List of Projects match (empty list if not found any)
 	 */
-	List<Project> searchProject(ProjectQuery criteria) 
+	List<Project> searchProject(ProjectQuery criteria)
 			throws ServiceInvalidInputException, ServiceOperationException;
-	
+
 	/**
-	 * Count number of Projects that match given criteria (exclude paging search).
+	 * Count number of Projects that match given query object but not include
+	 * paging information in query.
 	 */
-	int countProjectMatchExcludePaging(ProjectQuery projectQuery) throws ServiceOperationException;
-	
-	/**
-	 * Update the modified project.
-	 */
-	void saveOrUpdateProject(Project project) 
+	int countProjectMatchExcludePaging(ProjectQuery projectQuery)
 			throws ServiceOperationException;
-	
+
 	/**
-	 * Delete projects
+	 * Update the given Project.
 	 */
-	void deleteProject(Project project) throws ServiceOperationException;
-	
+	void saveOrUpdateProject(Project project) throws ServiceOperationException;
+
 	/**
-	 * Delete projects with Number.
+	 * Delete the given Project.
+	 * 
+	 * @throws ServiceProjectNotExistsException
+	 *             if given Project not exists.
 	 */
-	void deleteProjectNumber(int number) throws ServiceOperationException;
+	void deleteProject(Project project)
+			throws ServiceProjectNotExistsException, ServiceOperationException;
+
+	/**
+	 * Delete Project with Number.
+	 * 
+	 * @throws ServiceProjectNotExistsException
+	 *             if given number not exists.
+	 */
+	void deleteProjectNumber(int number)
+			throws ServiceProjectNotExistsException, ServiceOperationException;
 }
