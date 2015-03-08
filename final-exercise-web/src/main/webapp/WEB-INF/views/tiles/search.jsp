@@ -128,7 +128,7 @@
 						
 						<!-- Top pager and delete button -->
 						<div>
-							<button type="submit" formaction="${pageContext.request.contextPath}/search/delete" class="btn btn-default btn-sm col-md-2">
+							<button type="submit" formaction="${pageContext.request.contextPath}/search/delete" class="btn btn-default btn-sm col-md-2" onclick="return onDelete();">
 								<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
 							</button>
 							
@@ -217,10 +217,23 @@
 		<form:hidden id="totalField" path="total" />
 		<form:hidden id="startField" path="start" />
 		<form:hidden id="maxField" path="max" />
+		
+		<div id="confirmMessage" style="display: none;">
+			<spring:message code="label.editpage.confirm" />
+		</div>
 	</form:form>
 	
 	<!-- JS -->
 	<script type="text/javascript">
+		function onDelete() {
+			var mess = $("#confirmMessage").html();
+			var sure = confirm(mess);
+			if (sure) {
+				return true;
+			}
+			return false;
+		}
+	
 		function onReset() {
 			$("#inputNumber").val("");
 			$("#inputName").val("");

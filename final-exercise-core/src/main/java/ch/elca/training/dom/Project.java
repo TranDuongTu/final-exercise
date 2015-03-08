@@ -132,7 +132,7 @@ public class Project extends BaseDom {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

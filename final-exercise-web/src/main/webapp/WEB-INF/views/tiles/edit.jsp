@@ -36,6 +36,9 @@
 		<!-- Project ID. -->
 		<form:hidden path="id" />
 		
+		<!-- Project version -->
+		<form:hidden path="version" />
+		
 		<!-- Project number -->
 		<div class="form-group">
 			<spring:message code="placeholder.editpage.number" var="proNumber" />
@@ -136,6 +139,9 @@
 		<div id="dateFormatString" style="display: none;">
 			<spring:message code="format.date" />
 		</div>
+		<div id="confirmMessage" style="display: none;">
+			<spring:message code="label.editpage.confirm" />
+		</div>
 	</form:form>
 	
 	<!-- JS -->
@@ -153,6 +159,12 @@
 		});
 	
 	    function onCancel() {
+	    	// Confirmation
+	    	var mess = $("#confirmMessage").html();
+	    	var sure = confirm(mess);
+	    	if (!sure) return;
+	    	
+	    	// On canceling
 	    	var newURL = "";
 	    	if (document.URL.indexOf("?") == -1) {
 	    		newURL = document.URL + "?";
