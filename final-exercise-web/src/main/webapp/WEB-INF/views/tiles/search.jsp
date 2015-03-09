@@ -11,9 +11,11 @@
 		commandName="projectQuery">
 
 		<!-- Form title -->
-		<legend>
-			<b><spring:message code="title.searchpage" /></b>
-		</legend>
+		<fieldset>
+			<legend>
+				<b><spring:message code="title.searchpage" /></b>
+			</legend>
+		</fieldset>
 		
 		<!-- Message back from EDIT page -->
 		<c:if test="${not empty isSuccess}">
@@ -93,7 +95,7 @@
 				<div class="col-md-8">
 					<form:select path="projectStatus" cssClass="form-control"
 						id="inputStatus">
-						<form:option value="" selected="selected">
+						<form:option value="">
 							<spring:message code="placeholder.searchpage.status" />
 						</form:option>
 						<form:options />
@@ -225,6 +227,10 @@
 	
 	<!-- JS -->
 	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#inputNumber").focus();
+		});
+	
 		function onDelete() {
 			var mess = $("#confirmMessage").html();
 			var sure = confirm(mess);

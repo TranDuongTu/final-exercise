@@ -4,7 +4,7 @@
 <div class="project-menu">
 	<!-- ELCA Brand -->
 	<div class="menu-logo">
-		<img src="resources/images/elca.jpg" class="img-responsive" />
+		<img alt="logo" src="resources/images/elca.jpg" class="img-responsive" />
 	</div>
 	
 	<!-- Check item active -->
