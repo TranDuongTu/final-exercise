@@ -221,7 +221,7 @@
 		<form:hidden id="maxField" path="max" />
 		
 		<div id="confirmMessage" style="display: none;">
-			<spring:message code="label.editpage.confirm" />
+			<spring:message code="label.confirm" />
 		</div>
 	</form:form>
 	

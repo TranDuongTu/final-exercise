@@ -9,16 +9,18 @@
 		commandName="project">
 
 		<!-- Choosing form legend -->
-		<legend>
-			<c:choose>
-				<c:when test="${project.id > 0}">
-					<b><spring:message code="title.editpage.edit" /></b>
-				</c:when>
-				<c:otherwise>
-					<b><spring:message code="title.editpage.new" /></b>
-				</c:otherwise>
-			</c:choose>
-		</legend>
+		<fieldset>
+			<legend>
+				<c:choose>
+					<c:when test="${project.id > 0}">
+						<b><spring:message code="title.editpage.edit" /></b>
+					</c:when>
+					<c:otherwise>
+						<b><spring:message code="title.editpage.new" /></b>
+					</c:otherwise>
+				</c:choose>
+			</legend>
+		</fieldset>
 
 		<!-- Checking for errors -->
 		<div class="errors-panel">
@@ -91,7 +93,7 @@
 			</label>
 			<div class="col-md-10">
 				<form:select path="status" cssClass="form-control" id="inputStatus">
-					<form:option value="" disabled="true" selected="selected">
+					<form:option value="" disabled="true">
 						<spring:message code="label.editpage.default_status" />
 					</form:option>
 					<form:options />
@@ -140,7 +142,7 @@
 			<spring:message code="format.date" />
 		</div>
 		<div id="confirmMessage" style="display: none;">
-			<spring:message code="label.editpage.confirm" />
+			<spring:message code="label.confirm" />
 		</div>
 	</form:form>
 	
@@ -156,6 +158,8 @@
 			$("#inputEndDate").datepicker({
 				dateFormat: dateFormat
 			});
+			
+			$("#inputName").focus();
 		});
 	
 	    function onCancel() {
